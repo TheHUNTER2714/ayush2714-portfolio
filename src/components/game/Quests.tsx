@@ -3,43 +3,69 @@ import { motion } from "framer-motion";
 const QUESTS = [
   {
     code: "Q-001",
-    title: "Neon Atlas",
+    title: "StudyCare — Emotional Chatbot AI",
     type: "MAIN QUEST",
     rarity: "LEGENDARY",
-    desc: "Real-time 3D map editor with collaborative cursors and physics-based terrain sculpting.",
-    stack: ["Three.js", "WebRTC", "Rust/WASM"],
+    desc: "AI-powered chatbot offering emotional support and study assistance through natural-language conversations.",
+    stack: ["Python", "AI", "NLP"],
     reward: "+1200 XP",
-    status: "COMPLETE",
+    status: "LIVE",
+    href: "https://studycarechatbot.netlify.app/",
   },
   {
     code: "Q-002",
-    title: "Pulse Studio",
-    type: "SIDE QUEST",
+    title: "ChatCord — Real-time Chat",
+    type: "MAIN QUEST",
     rarity: "EPIC",
-    desc: "Audio-reactive shader playground used by 30k+ creators to design generative visuals.",
-    stack: ["GLSL", "Web Audio", "React"],
-    reward: "+860 XP",
-    status: "COMPLETE",
+    desc: "Real-time messaging app with rooms and presence, built on Socket.IO and Express.",
+    stack: ["Node.js", "Socket.IO", "Express"],
+    reward: "+940 XP",
+    status: "LIVE",
+    href: "https://chatcord-9slp.onrender.com",
   },
   {
     code: "Q-003",
-    title: "Drift OS",
-    type: "MAIN QUEST",
+    title: "Space Invader Arcade",
+    type: "SIDE QUEST",
     rarity: "EPIC",
-    desc: "Browser-based design OS — windowed workspaces, plugin runtime, multiplayer canvases.",
-    stack: ["TanStack", "Yjs", "Edge"],
-    reward: "+940 XP",
-    status: "IN PROGRESS",
+    desc: "Classic arcade shooter on HTML5 Canvas — the direct inspiration for the mini-game in this portfolio.",
+    stack: ["JavaScript", "Canvas", "Game Dev"],
+    reward: "+860 XP",
+    status: "LIVE",
+    href: "https://thehunter2714.github.io/space_invaders_arcade/",
   },
   {
     code: "Q-004",
-    title: "Voxel Diary",
+    title: "Resume Skill Extractor",
     type: "BOUNTY",
     rarity: "RARE",
-    desc: "A daily journaling app that builds a voxel city from your habits and streaks.",
-    stack: ["R3F", "Supabase", "Motion"],
+    desc: "ML tool that parses resumes and surfaces skills — Flask backend, Python ML pipeline.",
+    stack: ["ML", "Flask", "Python"],
+    reward: "+620 XP",
+    status: "LIVE",
+    href: "https://rajeshth.netlify.app/",
+  },
+  {
+    code: "Q-005",
+    title: "Student DB Management System",
+    type: "SIDE QUEST",
+    rarity: "RARE",
+    desc: "Full CRUD student records system with clean UI/UX.",
+    stack: ["JavaScript", "Database", "UI/UX"],
     reward: "+520 XP",
-    status: "COMPLETE",
+    status: "LIVE",
+    href: "https://thehunter2714.github.io/STDM/",
+  },
+  {
+    code: "Q-006",
+    title: "Resume Builder",
+    type: "BOUNTY",
+    rarity: "RARE",
+    desc: "Interactive resume builder with real-time preview and PDF export.",
+    stack: ["HTML", "CSS", "JavaScript"],
+    reward: "+460 XP",
+    status: "LIVE",
+    href: "https://thehunter2714.github.io/resume/",
   },
 ];
 
@@ -62,7 +88,7 @@ export function Quests() {
             <h2 className="font-display font-black text-4xl md:text-6xl text-glow">SHIPPED <span className="text-accent text-glow-accent">QUESTS</span></h2>
           </div>
           <div className="font-mono text-xs text-muted-foreground">
-            COMPLETED: <span className="text-primary">37</span> // ACTIVE: <span className="text-accent">3</span>
+            LIVE: <span className="text-primary">6</span> // STACK: <span className="text-accent">FULL</span>
           </div>
         </motion.div>
 
@@ -70,13 +96,14 @@ export function Quests() {
           {QUESTS.map((q, i) => {
             const color = RARITY[q.rarity];
             return (
-              <motion.article
+              <motion.a
                 key={q.code}
+                href={q.href} target="_blank" rel="noreferrer"
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.6, delay: i * 0.08 }}
                 whileHover={{ y: -6 }}
-                className="corner-frame group relative bg-card backdrop-blur-md p-5 cursor-pointer transition-shadow"
+                className="corner-frame group relative bg-card backdrop-blur-md p-5 cursor-pointer transition-shadow block"
                 style={{ boxShadow: `0 0 0 1px ${color}33, 0 0 24px -8px ${color}66, inset 0 0 32px -16px ${color}` }}
               >
                 <span className="c-bl" /><span className="c-br" />
@@ -105,11 +132,11 @@ export function Quests() {
 
                 <footer className="flex items-center justify-between pt-3 border-t border-border/60">
                   <span className="font-mono text-[10px]">
-                    STATUS: <span className={q.status === "COMPLETE" ? "text-primary" : "text-[var(--xp)] animate-pulse"}>{q.status}</span>
+                    STATUS: <span className="text-primary">{q.status}</span>
                   </span>
-                  <span className="font-mono text-[10px]" style={{ color: "var(--xp)" }}>{q.reward}</span>
+                  <span className="font-mono text-[10px] group-hover:text-primary transition-colors" style={{ color: "var(--xp)" }}>▸ LAUNCH {q.reward}</span>
                 </footer>
-              </motion.article>
+              </motion.a>
             );
           })}
         </div>
