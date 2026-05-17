@@ -7,12 +7,14 @@ interface Trophy {
 }
 
 const TROPHIES: Trophy[] = [
-  { id: "t1", tier: "PLATINUM", title: "Awwwards SOTD", desc: "Site of the Day — Neon Atlas project, July 2025.", date: "07.25", rarity: "0.8% UNLOCKED", icon: "★" },
-  { id: "t2", tier: "GOLD", title: "1M+ Page Views", desc: "Pulse Studio crossed one million sessions in 90 days.", date: "03.25", rarity: "2.1% UNLOCKED", icon: "◈" },
-  { id: "t3", tier: "GOLD", title: "Speaker — ReactConf", desc: "Talk on motion-first interfaces, 4.9/5 audience rating.", date: "11.24", rarity: "3.4% UNLOCKED", icon: "▲" },
-  { id: "t4", tier: "SILVER", title: "Open Source Lord", desc: "Maintainer of 6 libraries · 18.4k cumulative GitHub stars.", date: "ONGOING", rarity: "5.7% UNLOCKED", icon: "❖" },
-  { id: "t5", tier: "SILVER", title: "Y Combinator W24", desc: "Co-built Drift OS — accepted into Y Combinator batch W24.", date: "01.24", rarity: "6.2% UNLOCKED", icon: "◆" },
-  { id: "t6", tier: "BRONZE", title: "Patent Granted", desc: "Real-time collaborative shader compilation — US-2023.", date: "09.23", rarity: "12% UNLOCKED", icon: "⬢" },
+  { id: "t1", tier: "PLATINUM", title: "🥇 AKTU AI Tech Hackathon", desc: "1st Position — AKTU AI Tech Guvi HCL Hackathon.", date: "2024", rarity: "TOP 1%", icon: "★" },
+  { id: "t2", tier: "GOLD", title: "Google Arcade Facilitator", desc: "Mentoring students in coding & development since April 2023.", date: "ONGOING", rarity: "ACTIVE", icon: "◈" },
+  { id: "t3", tier: "GOLD", title: "JP Morgan — Virtual Intern", desc: "Fintech-focused tasks; insights into banking systems & solutions.", date: "11.24 – 12.24", rarity: "COMPLETED", icon: "▲" },
+  { id: "t4", tier: "SILVER", title: "Tata Group — Virtual Intern", desc: "Data analysis on real-world datasets driving business decisions.", date: "10.24", rarity: "COMPLETED", icon: "❖" },
+  { id: "t5", tier: "SILVER", title: "IBM AI Programming", desc: "Certified — AI Programming track via IBM.", date: "2024", rarity: "CERTIFIED", icon: "◆" },
+  { id: "t6", tier: "SILVER", title: "IBM Cyber Security Fundamentals", desc: "Certified in core cybersecurity principles & defense.", date: "2024", rarity: "CERTIFIED", icon: "◆" },
+  { id: "t7", tier: "BRONZE", title: "Cisco Python Essentials 3", desc: "Advanced Python via Cisco Networking Academy.", date: "2024", rarity: "CERTIFIED", icon: "⬢" },
+  { id: "t8", tier: "BRONZE", title: "GitHub — Quad Badges", desc: "Pair Extraordinaire · Pull Shark · YOLO · Quickdraw.", date: "ONGOING", rarity: "STACKED", icon: "⬡" },
 ];
 
 const TIER_COLOR: Record<string, string> = {
@@ -56,7 +58,6 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
       >
         <span className="c-bl" /><span className="c-br" />
 
-        {/* Trophy unlock burst */}
         {unlocking && (
           <motion.div
             initial={{ scale: 0, opacity: 0.8 }} animate={{ scale: 4, opacity: 0 }}
@@ -66,7 +67,6 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
           />
         )}
 
-        {/* Glare */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -77,7 +77,6 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
         />
 
         <div className="flex items-start gap-4" style={{ transform: "translateZ(40px)" }}>
-          {/* Hex medal */}
           <div
             className="relative w-16 h-16 grid place-items-center shrink-0"
             style={{
@@ -112,7 +111,6 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
           </div>
         </div>
 
-        {/* Animated bottom bar */}
         <motion.div
           initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
           viewport={{ once: true }} transition={{ duration: 1.4, delay: idx * 0.1 + 0.4 }}
@@ -137,7 +135,7 @@ export function Achievements() {
             {" "}
             <span className="text-[var(--legendary)]" style={{ textShadow: "0 0 20px var(--legendary)" }}>★</span>
           </h2>
-          <p className="font-mono text-xs text-muted-foreground mt-3">6 / 24 UNLOCKED · COMPLETION 25%</p>
+          <p className="font-mono text-xs text-muted-foreground mt-3">HACKATHONS · INTERNSHIPS · CERTIFICATIONS</p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-5">

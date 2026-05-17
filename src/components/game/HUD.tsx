@@ -13,7 +13,8 @@ const ZONES = [
   { id: "quests", label: "QUESTS", key: "02" },
   { id: "skills", label: "SKILL TREE", key: "03" },
   { id: "achievements", label: "ACHIEVEMENTS", key: "04" },
-  { id: "contact", label: "TRANSMIT", key: "05" },
+  { id: "arcade", label: "ARCADE", key: "05" },
+  { id: "contact", label: "TRANSMIT", key: "06" },
 ];
 
 export function HUD({ level, zone, onNav, active }: HUDProps) {
@@ -42,12 +43,12 @@ export function HUD({ level, zone, onNav, active }: HUDProps) {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-10 h-10 rounded-sm bg-gradient-to-br from-primary to-accent grid place-items-center font-display font-black text-primary-foreground text-sm animate-pulse-glow">
-                  AK
+                  AA
                 </div>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-display text-xs text-primary text-glow">PLAYER_01</span>
+                  <span className="font-display text-xs text-primary text-glow">AYUSH_AA</span>
                   <span className="font-mono text-[10px] text-muted-foreground">LV.{level}</span>
                 </div>
                 <div className="mt-1 h-1.5 w-full bg-secondary/60 overflow-hidden rounded-full">

@@ -7,15 +7,15 @@ interface Node {
 }
 
 const NODES: Node[] = [
-  { id: "n1", label: "TYPESCRIPT", x: 50, y: 12, level: 5, max: 5, unlocked: true, branch: "core", connects: ["n2", "n3"] },
-  { id: "n2", label: "REACT", x: 25, y: 30, level: 5, max: 5, unlocked: true, branch: "core", connects: ["n4", "n5"] },
-  { id: "n3", label: "NODE / EDGE", x: 75, y: 30, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n6"] },
-  { id: "n4", label: "MOTION", x: 12, y: 52, level: 5, max: 5, unlocked: true, branch: "design", connects: ["n7"] },
-  { id: "n5", label: "TAILWIND", x: 38, y: 52, level: 5, max: 5, unlocked: true, branch: "design", connects: ["n7"] },
-  { id: "n6", label: "POSTGRES", x: 78, y: 52, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n8"] },
-  { id: "n7", label: "THREE.JS", x: 25, y: 74, level: 4, max: 5, unlocked: true, branch: "design", connects: ["n9"] },
-  { id: "n8", label: "RUST / WASM", x: 78, y: 74, level: 3, max: 5, unlocked: true, branch: "engine", connects: ["n9"] },
-  { id: "n9", label: "SHADERS · GLSL", x: 50, y: 92, level: 3, max: 5, unlocked: true, branch: "core", connects: [] },
+  { id: "n1", label: "PYTHON",       x: 50, y: 12, level: 5, max: 5, unlocked: true, branch: "core",   connects: ["n2", "n3"] },
+  { id: "n2", label: "JAVASCRIPT",   x: 25, y: 30, level: 4, max: 5, unlocked: true, branch: "core",   connects: ["n4", "n5"] },
+  { id: "n3", label: "C LANG",       x: 75, y: 30, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n6"] },
+  { id: "n4", label: "HTML / CSS",   x: 12, y: 52, level: 5, max: 5, unlocked: true, branch: "design", connects: ["n7"] },
+  { id: "n5", label: "NODE.JS",      x: 38, y: 52, level: 4, max: 5, unlocked: true, branch: "core",   connects: ["n7"] },
+  { id: "n6", label: "NETWORKING",   x: 78, y: 52, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n8"] },
+  { id: "n7", label: "AI / NLP",     x: 25, y: 74, level: 4, max: 5, unlocked: true, branch: "design", connects: ["n9"] },
+  { id: "n8", label: "CYBER SEC",    x: 78, y: 74, level: 3, max: 5, unlocked: true, branch: "engine", connects: ["n9"] },
+  { id: "n9", label: "FULL-STACK",   x: 50, y: 92, level: 5, max: 5, unlocked: true, branch: "core",   connects: [] },
 ];
 
 const BRANCH_COLOR: Record<string, string> = {

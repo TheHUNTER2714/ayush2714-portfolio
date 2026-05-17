@@ -7,26 +7,28 @@ import { Character } from "@/components/game/Character";
 import { Quests } from "@/components/game/Quests";
 import { SkillTree } from "@/components/game/SkillTree";
 import { Achievements } from "@/components/game/Achievements";
+import { MiniGame } from "@/components/game/MiniGame";
 import { Contact } from "@/components/game/Contact";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Alex Kairos — Creative Engineer · Portfolio" },
-      { name: "description", content: "A video-game-inspired portfolio: quests, skill tree, achievement vault. Built for motion-first interactive products." },
-      { property: "og:title", content: "Alex Kairos — Creative Engineer" },
-      { property: "og:description", content: "Interactive game-style portfolio with a live animated HUD." },
+      { title: "Ayush Agnihotri — Full-Stack Developer · Playable Portfolio" },
+      { name: "description", content: "Video-game-inspired portfolio of Ayush Agnihotri: quests, skill tree, trophy vault, and a playable Space Invaders mini-game that unlocks the bio." },
+      { property: "og:title", content: "Ayush Agnihotri — Playable Portfolio" },
+      { property: "og:description", content: "Shoot the invaders to unlock my bio. Full-Stack Dev · AI Enthusiast · Kanpur, IN." },
     ],
   }),
   component: Index,
 });
 
 const SECTIONS = [
-  { id: "character", label: "NEON_GRID — SECTOR 01" },
-  { id: "quests", label: "QUEST HALL — SECTOR 02" },
-  { id: "skills", label: "ABILITY CORE — SECTOR 03" },
+  { id: "character",    label: "NEON_GRID — SECTOR 01" },
+  { id: "quests",       label: "QUEST HALL — SECTOR 02" },
+  { id: "skills",       label: "ABILITY CORE — SECTOR 03" },
   { id: "achievements", label: "TROPHY VAULT — SECTOR 04" },
-  { id: "contact", label: "SAVE POINT — SECTOR 05" },
+  { id: "arcade",       label: "ARCADE — SECTOR 05" },
+  { id: "contact",      label: "SAVE POINT — SECTOR 06" },
 ];
 
 function Index() {
@@ -67,6 +69,7 @@ function Index() {
             {s.id === "quests" && <Quests />}
             {s.id === "skills" && <SkillTree />}
             {s.id === "achievements" && <Achievements />}
+            {s.id === "arcade" && <MiniGame />}
             {s.id === "contact" && <Contact />}
           </div>
         ))}

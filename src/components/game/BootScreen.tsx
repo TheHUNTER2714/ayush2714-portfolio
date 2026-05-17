@@ -1,12 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Logo } from "./Logo";
 
 const STEPS = [
   "INIT KERNEL.................OK",
   "LOAD GFX_DRIVER.............OK",
-  "MOUNT /portfolio............OK",
+  "MOUNT /ayush_agnihotri......OK",
   "DECRYPT IDENTITY............OK",
-  "SPAWN PLAYER_01.............OK",
+  "SPAWN PLAYER_AA.............OK",
   "ENTERING ZONE: NEON_GRID....",
 ];
 
@@ -37,8 +38,16 @@ export function BootScreen({ onDone }: { onDone: () => void }) {
 
           <div className="relative w-[min(520px,90vw)] corner-frame bg-card/60 backdrop-blur p-6">
             <span className="c-bl" /><span className="c-br" />
-            <div className="font-display text-primary text-glow text-xl tracking-widest mb-4 animate-flicker">
-              KAIROS // SYSTEM v.2.6.1
+            <div className="flex items-center gap-4 mb-4">
+              <Logo size={64} label={false} />
+              <div>
+                <div className="font-display text-primary text-glow text-xl tracking-widest animate-flicker">
+                  AGNIHOTRI // OS v.27.11.05
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mt-1">
+                  AYUSH AGNIHOTRI · FULL-STACK · KANPUR
+                </div>
+              </div>
             </div>
             <div className="font-mono text-xs space-y-1">
               {STEPS.slice(0, i).map((s) => (
