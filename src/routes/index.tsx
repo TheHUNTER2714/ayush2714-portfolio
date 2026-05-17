@@ -9,6 +9,8 @@ import { SkillTree } from "@/components/game/SkillTree";
 import { Achievements } from "@/components/game/Achievements";
 import { MiniGame } from "@/components/game/MiniGame";
 import { Contact } from "@/components/game/Contact";
+import { PlayInvite } from "@/components/game/PlayInvite";
+import { SectionTransition } from "@/components/game/SectionTransition";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -61,16 +63,19 @@ function Index() {
       {!booted && <BootScreen onDone={() => setBooted(true)} />}
 
       {booted && <HUD level={37} zone={zone} active={active} onNav={scrollTo} />}
+      {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
 
       <div className="relative">
         {SECTIONS.map((s) => (
           <div key={s.id} id={s.id} ref={(el) => { refs.current[s.id] = el; }}>
-            {s.id === "character" && <Character />}
-            {s.id === "quests" && <Quests />}
-            {s.id === "skills" && <SkillTree />}
-            {s.id === "achievements" && <Achievements />}
-            {s.id === "arcade" && <MiniGame />}
-            {s.id === "contact" && <Contact />}
+            <SectionTransition>
+              {s.id === "character" && <Character />}
+              {s.id === "quests" && <Quests />}
+              {s.id === "skills" && <SkillTree />}
+              {s.id === "achievements" && <Achievements />}
+              {s.id === "arcade" && <MiniGame />}
+              {s.id === "contact" && <Contact />}
+            </SectionTransition>
           </div>
         ))}
       </div>
