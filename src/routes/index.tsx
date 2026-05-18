@@ -11,6 +11,7 @@ import { MiniGame } from "@/components/game/MiniGame";
 import { Contact } from "@/components/game/Contact";
 import { PlayInvite } from "@/components/game/PlayInvite";
 import { SectionTransition } from "@/components/game/SectionTransition";
+import { gameBus, SECTION_HUE } from "@/components/game/gameState";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,6 +51,10 @@ function Index() {
     SECTIONS.forEach((s) => { const el = refs.current[s.id]; if (el) obs.observe(el); });
     return () => obs.disconnect();
   }, [booted]);
+
+  useEffect(() => {
+    gameBus.set({ section: active, hue: SECTION_HUE[active] ?? 195 });
+  }, [active]);
 
   const scrollTo = (id: string) => {
     refs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
