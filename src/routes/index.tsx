@@ -52,6 +52,10 @@ function Index() {
     return () => obs.disconnect();
   }, [booted]);
 
+  useEffect(() => {
+    gameBus.set({ section: active, hue: SECTION_HUE[active] ?? 195 });
+  }, [active]);
+
   const scrollTo = (id: string) => {
     refs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
