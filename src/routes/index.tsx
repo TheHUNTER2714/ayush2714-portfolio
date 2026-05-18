@@ -11,6 +11,7 @@ import { MiniGame } from "@/components/game/MiniGame";
 import { Contact } from "@/components/game/Contact";
 import { PlayInvite } from "@/components/game/PlayInvite";
 import { SectionTransition } from "@/components/game/SectionTransition";
+import { gameBus, SECTION_HUE } from "@/components/game/gameState";
 
 export const Route = createFileRoute("/")({
   head: () => ({
