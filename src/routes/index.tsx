@@ -10,6 +10,7 @@ import { Achievements } from "@/components/game/Achievements";
 import { MiniGame } from "@/components/game/MiniGame";
 import { Contact } from "@/components/game/Contact";
 import { PlayInvite } from "@/components/game/PlayInvite";
+import { PhaseTracker } from "@/components/game/PhaseTracker";
 import { SectionTransition } from "@/components/game/SectionTransition";
 import { gameBus, SECTION_HUE } from "@/components/game/gameState";
 
@@ -68,6 +69,7 @@ function Index() {
       {!booted && <BootScreen onDone={() => setBooted(true)} />}
 
       {booted && <HUD level={37} zone={zone} active={active} onNav={scrollTo} />}
+      {booted && <PhaseTracker />}
       {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
 
       <div className="relative">
