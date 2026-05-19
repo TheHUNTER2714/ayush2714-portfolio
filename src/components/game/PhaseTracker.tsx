@@ -20,17 +20,17 @@ const PHASES: Phase[] = [
     id: "p2",
     title: "PHASE 2 · LIVE OPS",
     items: [
-      { label: "Terminal", done: false },
+      { label: "Terminal", done: true },
       { label: "Achievements", done: true },
-      { label: "Live GitHub stats", done: false },
+      { label: "Live GitHub stats", done: true },
     ],
   },
   {
     id: "p3",
     title: "PHASE 3 · ASCEND",
     items: [
-      { label: "AI assistant", done: false },
-      { label: "3D world", done: false },
+      { label: "AI assistant", done: true },
+      { label: "3D world", done: true },
       { label: "Mini games", done: true },
     ],
   },
