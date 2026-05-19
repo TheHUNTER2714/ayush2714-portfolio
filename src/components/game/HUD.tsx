@@ -9,12 +9,16 @@ interface HUDProps {
 }
 
 const ZONES = [
-  { id: "character", label: "CHARACTER", key: "01" },
+  { id: "character", label: "CHAR", key: "01" },
   { id: "quests", label: "QUESTS", key: "02" },
-  { id: "skills", label: "SKILL TREE", key: "03" },
-  { id: "achievements", label: "ACHIEVEMENTS", key: "04" },
-  { id: "arcade", label: "ARCADE", key: "05" },
-  { id: "contact", label: "TRANSMIT", key: "06" },
+  { id: "skills", label: "SKILLS", key: "03" },
+  { id: "world", label: "3D", key: "04" },
+  { id: "achievements", label: "TROPHY", key: "05" },
+  { id: "github", label: "GITHUB", key: "06" },
+  { id: "terminal", label: "SHELL", key: "07" },
+  { id: "ai", label: "AI", key: "08" },
+  { id: "arcade", label: "ARCADE", key: "09" },
+  { id: "contact", label: "TRANSMIT", key: "10" },
 ];
 
 export function HUD({ level, zone, onNav, active }: HUDProps) {
