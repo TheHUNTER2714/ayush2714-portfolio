@@ -13,14 +13,18 @@ import { PlayInvite } from "@/components/game/PlayInvite";
 import { PhaseTracker } from "@/components/game/PhaseTracker";
 import { SectionTransition } from "@/components/game/SectionTransition";
 import { gameBus, SECTION_HUE } from "@/components/game/gameState";
+import { Terminal } from "@/components/game/Terminal";
+import { GithubStats } from "@/components/game/GithubStats";
+import { AIAssistant } from "@/components/game/AIAssistant";
+import { World3D } from "@/components/game/World3D";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Ayush Agnihotri — Full-Stack Developer · Playable Portfolio" },
-      { name: "description", content: "Video-game-inspired portfolio of Ayush Agnihotri: quests, skill tree, trophy vault, and a playable Space Invaders mini-game that unlocks the bio." },
-      { property: "og:title", content: "Ayush Agnihotri — Playable Portfolio" },
-      { property: "og:description", content: "Shoot the invaders to unlock my bio. Full-Stack Dev · AI Enthusiast · Kanpur, IN." },
+      { title: "Ayush Agnihotri — THEHUNTER2714 · Playable Portfolio" },
+      { name: "description", content: "Arcade portfolio of Ayush Agnihotri (THEHUNTER2714): cinematic intro, skill tree, quests, terminal, live GitHub feed, AI co-pilot, 3D world, and mini-games." },
+      { property: "og:title", content: "THEHUNTER2714 — Ayush Agnihotri's Playable Portfolio" },
+      { property: "og:description", content: "Full-stack dev · AI · Falcon-themed arcade portfolio with terminal, AI co-pilot, and 3D world." },
     ],
   }),
   component: Index,
@@ -30,9 +34,13 @@ const SECTIONS = [
   { id: "character",    label: "NEON_GRID — SECTOR 01" },
   { id: "quests",       label: "QUEST HALL — SECTOR 02" },
   { id: "skills",       label: "ABILITY CORE — SECTOR 03" },
-  { id: "achievements", label: "TROPHY VAULT — SECTOR 04" },
-  { id: "arcade",       label: "ARCADE — SECTOR 05" },
-  { id: "contact",      label: "SAVE POINT — SECTOR 06" },
+  { id: "world",        label: "3D NEBULA — SECTOR 04" },
+  { id: "achievements", label: "TROPHY VAULT — SECTOR 05" },
+  { id: "github",       label: "REPO TELEMETRY — SECTOR 06" },
+  { id: "terminal",     label: "/dev/falcon-shell — SECTOR 07" },
+  { id: "ai",           label: "FALCON_AI — SECTOR 08" },
+  { id: "arcade",       label: "ARCADE — SECTOR 09" },
+  { id: "contact",      label: "SAVE POINT — SECTOR 10" },
 ];
 
 function Index() {
@@ -68,7 +76,7 @@ function Index() {
       <GameBackground />
       {!booted && <BootScreen onDone={() => setBooted(true)} />}
 
-      {booted && <HUD level={37} zone={zone} active={active} onNav={scrollTo} />}
+      {booted && <HUD level={42} zone={zone} active={active} onNav={scrollTo} />}
       {booted && <PhaseTracker />}
       {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
 
@@ -79,7 +87,11 @@ function Index() {
               {s.id === "character" && <Character />}
               {s.id === "quests" && <Quests />}
               {s.id === "skills" && <SkillTree />}
+              {s.id === "world" && <World3D />}
               {s.id === "achievements" && <Achievements />}
+              {s.id === "github" && <GithubStats />}
+              {s.id === "terminal" && <Terminal />}
+              {s.id === "ai" && <AIAssistant />}
               {s.id === "arcade" && <MiniGame />}
               {s.id === "contact" && <Contact />}
             </SectionTransition>
