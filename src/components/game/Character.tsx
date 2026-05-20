@@ -253,6 +253,7 @@ export function Character() {
               </div>
             ))}
           </div>
+          </div>
         </motion.div>
       </div>
     </section>
