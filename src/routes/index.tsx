@@ -17,6 +17,8 @@ import { Terminal } from "@/components/game/Terminal";
 import { GithubStats } from "@/components/game/GithubStats";
 import { AIAssistant } from "@/components/game/AIAssistant";
 import { World3D } from "@/components/game/World3D";
+import { ScrollFalcon } from "@/components/game/ScrollFalcon";
+import { Avatar3D } from "@/components/game/Avatar3D";
 
 export const Route = createFileRoute("/")({
   head: () => ({
