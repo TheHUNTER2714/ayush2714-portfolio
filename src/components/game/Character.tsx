@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Falcon } from "./Falcon";
+import { Avatar3D } from "./Avatar3D";
 
 const BIO_LINES = [
   "> booting AYUSH.AGNIHOTRI ...",
@@ -207,12 +208,14 @@ export function Character() {
         <motion.div
           initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.7 }}
-          className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden"
+          className="space-y-5"
         >
-          <span className="c-bl" /><span className="c-br" />
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute inset-x-0 h-12 bg-gradient-to-b from-primary/10 to-transparent animate-scan" />
-          </div>
+          <Avatar3D />
+          <div className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden">
+            <span className="c-bl" /><span className="c-br" />
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute inset-x-0 h-12 bg-gradient-to-b from-primary/10 to-transparent animate-scan" />
+            </div>
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-display text-sm tracking-widest text-primary text-glow">STAT MATRIX</h3>
             <span className="font-mono text-[10px] text-muted-foreground">FALCON · ONLINE</span>
@@ -249,6 +252,7 @@ export function Character() {
                 <div className="font-mono text-[10px] text-muted-foreground mt-1">{s.l}</div>
               </div>
             ))}
+          </div>
           </div>
         </motion.div>
       </div>

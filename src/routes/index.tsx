@@ -17,6 +17,8 @@ import { Terminal } from "@/components/game/Terminal";
 import { GithubStats } from "@/components/game/GithubStats";
 import { AIAssistant } from "@/components/game/AIAssistant";
 import { World3D } from "@/components/game/World3D";
+import { ScrollFalcon } from "@/components/game/ScrollFalcon";
+import { Avatar3D } from "@/components/game/Avatar3D";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -79,6 +81,7 @@ function Index() {
       {booted && <HUD level={42} zone={zone} active={active} onNav={scrollTo} />}
       {booted && <PhaseTracker />}
       {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
+      {booted && <ScrollFalcon />}
 
       <div className="relative">
         {SECTIONS.map((s) => (

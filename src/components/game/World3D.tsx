@@ -1,113 +1,193 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, OrbitControls, Stars, Text } from "@react-three/drei";
-import { useRef, useState, Suspense } from "react";
+import { Float, OrbitControls, Stars, Text, Html, Trail } from "@react-three/drei";
+import { useRef, useState, Suspense, useMemo } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
 
-const NODES: { label: string; pos: [number, number, number]; color: string }[] = [
-  { label: "PYTHON",     pos: [ 2.2,  0.8,  0.0], color: "#9b87f5" },
-  { label: "JS",         pos: [-2.2,  0.6,  0.4], color: "#f7c948" },
-  { label: "NODE",       pos: [ 0.0,  2.2, -0.8], color: "#ef4444" },
-  { label: "AI/NLP",     pos: [-1.4, -1.8,  0.6], color: "#22d3ee" },
-  { label: "CYBER",      pos: [ 1.6, -1.6, -0.4], color: "#e94560" },
-  { label: "FULL-STACK", pos: [ 0.0,  0.0,  2.2], color: "#34d399" },
+type Node = {
+  label: string;
+  pos: [number, number, number];
+  color: string;
+  desc: string;
+  stack: string[];
+};
+
+const NODES: Node[] = [
+  { label: "PYTHON",     pos: [ 2.2,  0.8,  0.0], color: "#9b87f5", desc: "Backend + ML scripting", stack: ["FastAPI", "Pandas", "scikit-learn"] },
+  { label: "JS",         pos: [-2.2,  0.6,  0.4], color: "#f7c948", desc: "Browser runtime fluency", stack: ["ES2024", "TypeScript", "Vite"] },
+  { label: "NODE",       pos: [ 0.0,  2.2, -0.8], color: "#ef4444", desc: "Server JS + APIs", stack: ["Express", "tRPC", "Prisma"] },
+  { label: "AI/NLP",     pos: [-1.4, -1.8,  0.6], color: "#22d3ee", desc: "LLM apps & embeddings", stack: ["OpenAI", "LangChain", "Pinecone"] },
+  { label: "CYBER",      pos: [ 1.6, -1.6, -0.4], color: "#e94560", desc: "Recon, auth, hardening", stack: ["Burp", "Nmap", "OWASP"] },
+  { label: "FULL-STACK", pos: [ 0.0,  0.0,  2.2], color: "#34d399", desc: "End-to-end shipping", stack: ["React", "Next", "Supabase"] },
 ];
 
-function SkillNode({ label, pos, color }: { label: string; pos: [number, number, number]; color: string }) {
+const THEMES = [
+  { name: "CYAN",   core: "#22d3ee", a: "#22d3ee", b: "#e94560" },
+  { name: "NEON",   core: "#a78bfa", a: "#f472b6", b: "#22d3ee" },
+  { name: "EMBER",  core: "#fb7185", a: "#fbbf24", b: "#f472b6" },
+  { name: "MATRIX", core: "#34d399", a: "#22d3ee", b: "#a78bfa" },
+];
+
+function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }) {
   const ref = useRef<THREE.Mesh>(null);
   const [hover, setHover] = useState(false);
+
   useFrame(({ clock }) => {
     if (!ref.current) return;
     ref.current.rotation.x = clock.elapsedTime * 0.6;
     ref.current.rotation.y = clock.elapsedTime * 0.4;
+    const target = hover ? 0.62 : 0.42;
+    ref.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15);
   });
+
   return (
     <Float speed={2} rotationIntensity={0.4} floatIntensity={0.6}>
-      <group position={pos}>
+      <group position={node.pos}>
         <mesh
           ref={ref}
-          onPointerOver={() => setHover(true)}
-          onPointerOut={() => setHover(false)}
-          scale={hover ? 0.55 : 0.4}
+          onPointerOver={(e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = "pointer"; }}
+          onPointerOut={() => { setHover(false); document.body.style.cursor = "default"; }}
         >
           <octahedronGeometry args={[1, 0]} />
           <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={hover ? 1.4 : 0.6}
+            color={node.color}
+            emissive={node.color}
+            emissiveIntensity={hover ? 1.6 : 0.7}
             wireframe
           />
         </mesh>
-        <mesh scale={0.42}>
+        <mesh scale={0.45}>
           <octahedronGeometry args={[1, 0]} />
-          <meshBasicMaterial color={color} transparent opacity={0.08} />
+          <meshBasicMaterial color={node.color} transparent opacity={0.1} />
         </mesh>
-        <Text
-          position={[0, -0.7, 0]}
-          fontSize={0.22}
-          color={color}
-          anchorX="center" anchorY="middle"
-        >
-          {label}
+        <Text position={[0, -0.78, 0]} fontSize={0.22} color={node.color} anchorX="center" anchorY="middle">
+          {node.label}
         </Text>
+        {hover && (
+          <Html position={[0, 0.95, 0]} center distanceFactor={6}>
+            <div className="pointer-events-none whitespace-nowrap rounded-sm border px-2 py-1 font-mono text-[10px]"
+                 style={{ borderColor: node.color, color: node.color, background: "rgba(8,10,22,0.85)", boxShadow: `0 0 14px ${node.color}66` }}>
+              {node.desc}
+              <div className="opacity-70">{node.stack.join(" · ")}</div>
+            </div>
+          </Html>
+        )}
       </group>
     </Float>
   );
 }
 
-function CoreOrb() {
+function CoreOrb({ color }: { color: string }) {
   const ref = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
-    if (ref.current) ref.current.rotation.y = clock.elapsedTime * 0.3;
+    if (ref.current) {
+      ref.current.rotation.y = clock.elapsedTime * 0.35;
+      ref.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.15;
+    }
   });
   return (
-    <mesh ref={ref}>
-      <icosahedronGeometry args={[0.6, 1]} />
-      <meshStandardMaterial color="#22d3ee" emissive="#22d3ee" emissiveIntensity={1.2} wireframe />
-    </mesh>
+    <group>
+      <mesh ref={ref}>
+        <icosahedronGeometry args={[0.6, 1]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1.4} wireframe />
+      </mesh>
+      <mesh scale={0.7}>
+        <icosahedronGeometry args={[0.6, 0]} />
+        <meshBasicMaterial color={color} transparent opacity={0.08} />
+      </mesh>
+    </group>
   );
 }
 
-function ConnectionLines() {
-  const points: THREE.Vector3[] = [];
-  NODES.forEach((n) => {
-    points.push(new THREE.Vector3(0, 0, 0));
-    points.push(new THREE.Vector3(...n.pos));
+function OrbitingProbe({ color, radius = 2.9, speed = 0.6 }: { color: string; radius?: number; speed?: number }) {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime * speed;
+    if (ref.current) ref.current.position.set(Math.cos(t) * radius, Math.sin(t * 0.7) * 0.6, Math.sin(t) * radius);
   });
-  const geom = new THREE.BufferGeometry().setFromPoints(points);
+  return (
+    <Trail width={0.5} length={6} color={color} attenuation={(w) => w * w}>
+      <mesh ref={ref}>
+        <sphereGeometry args={[0.08, 12, 12]} />
+        <meshBasicMaterial color={color} />
+      </mesh>
+    </Trail>
+  );
+}
+
+function ConnectionLines({ color }: { color: string }) {
+  const geom = useMemo(() => {
+    const points: THREE.Vector3[] = [];
+    NODES.forEach((n) => {
+      points.push(new THREE.Vector3(0, 0, 0));
+      points.push(new THREE.Vector3(...n.pos));
+    });
+    return new THREE.BufferGeometry().setFromPoints(points);
+  }, []);
   return (
     <lineSegments geometry={geom}>
-      <lineBasicMaterial color="#22d3ee" transparent opacity={0.25} />
+      <lineBasicMaterial color={color} transparent opacity={0.28} />
     </lineSegments>
   );
 }
 
 export function World3D() {
+  const [themeIdx, setThemeIdx] = useState(0);
+  const theme = THEMES[themeIdx];
+
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-8">
           <div className="font-mono text-xs text-primary mb-2">▸ /worlds/skill-nebula.glb</div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">3D <span className="text-accent text-glow-accent">WORLD</span></h2>
-          <p className="font-mono text-xs text-muted-foreground mt-2">Drag to orbit. Scroll to zoom. Hover a node.</p>
+          <p className="font-mono text-xs text-muted-foreground mt-2">Drag to orbit · scroll to zoom · hover a node · cycle themes</p>
         </motion.div>
 
-        <div className="corner-frame box-glow bg-card/60 backdrop-blur-md h-[520px] relative overflow-hidden">
+        <div className="corner-frame box-glow bg-card/60 backdrop-blur-md h-[560px] relative overflow-hidden">
           <span className="c-bl" /><span className="c-br" />
-          <Canvas camera={{ position: [0, 0, 6], fov: 55 }}>
+          <Canvas camera={{ position: [0, 0.4, 6.2], fov: 55 }}>
             <Suspense fallback={null}>
-              <ambientLight intensity={0.3} />
-              <pointLight position={[5, 5, 5]} intensity={1.2} color="#22d3ee" />
-              <pointLight position={[-5, -5, -5]} intensity={1} color="#e94560" />
-              <Stars radius={50} depth={30} count={2000} factor={3} fade speed={1} />
-              <CoreOrb />
-              <ConnectionLines />
-              {NODES.map((n) => <SkillNode key={n.label} {...n} />)}
-              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.6} />
+              <ambientLight intensity={0.35} />
+              <pointLight position={[5, 5, 5]} intensity={1.4} color={theme.a} />
+              <pointLight position={[-5, -5, -5]} intensity={1.1} color={theme.b} />
+              <Stars radius={60} depth={40} count={2400} factor={3} fade speed={1} />
+              <CoreOrb color={theme.core} />
+              <ConnectionLines color={theme.core} />
+              <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
+              <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />
+              {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
+              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.6} minDistance={4} maxDistance={10} />
             </Suspense>
           </Canvas>
+
           <div className="absolute top-3 left-3 font-mono text-[10px] text-primary/80">
-            ⌬ NEBULA.LIVE — 6 NODES SYNCED
+            ⌬ NEBULA.LIVE — 6 NODES SYNCED · THEME {theme.name}
+          </div>
+
+          {/* theme switcher */}
+          <div className="absolute bottom-3 right-3 flex gap-2">
+            {THEMES.map((t, i) => (
+              <motion.button
+                key={t.name}
+                whileHover={{ scale: 1.15, y: -2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setThemeIdx(i)}
+                className="px-2.5 py-1 corner-frame font-mono text-[9px] tracking-widest backdrop-blur-md"
+                style={{
+                  background: i === themeIdx ? `${t.core}22` : "rgba(0,0,0,0.4)",
+                  color: t.core,
+                  boxShadow: i === themeIdx ? `0 0 16px ${t.core}55, inset 0 0 12px ${t.core}33` : "none",
+                }}
+              >
+                <span className="c-bl" /><span className="c-br" />
+                {t.name}
+              </motion.button>
+            ))}
+          </div>
+
+          <div className="absolute bottom-3 left-3 font-mono text-[10px] text-muted-foreground">
+            ▸ 6 nodes · 2 probes · live recolor
           </div>
         </div>
       </div>

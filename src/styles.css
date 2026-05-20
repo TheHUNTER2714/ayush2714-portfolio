@@ -75,6 +75,7 @@
 
 @layer base {
   * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; }
   html, body { background: var(--color-background); color: var(--color-foreground); }
   body {
     font-family: var(--font-mono);
@@ -82,8 +83,13 @@
     background-image:
       radial-gradient(ellipse at top, oklch(0.20 0.08 280 / 0.6), transparent 60%),
       radial-gradient(ellipse at bottom, oklch(0.18 0.10 195 / 0.4), transparent 60%);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   ::selection { background: var(--color-accent); color: var(--color-accent-foreground); }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
 }
 
 @layer utilities {
