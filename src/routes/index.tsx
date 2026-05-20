@@ -81,6 +81,7 @@ function Index() {
       {booted && <HUD level={42} zone={zone} active={active} onNav={scrollTo} />}
       {booted && <PhaseTracker />}
       {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
+      {booted && <ScrollFalcon />}
 
       <div className="relative">
         {SECTIONS.map((s) => (
