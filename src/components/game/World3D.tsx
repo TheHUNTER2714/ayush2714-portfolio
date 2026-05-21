@@ -3,6 +3,7 @@ import { Float, OrbitControls, Stars, Text, Html, Trail } from "@react-three/dre
 import { useRef, useState, Suspense, useMemo } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
+import { LaunchGate } from "./LaunchGate";
 
 type Node = {
   label: string;
@@ -144,14 +145,17 @@ export function World3D() {
           <p className="font-mono text-xs text-muted-foreground mt-2">Drag to orbit · scroll to zoom · hover a node · cycle themes</p>
         </motion.div>
 
-        <div className="corner-frame box-glow bg-card/60 backdrop-blur-md h-[560px] relative overflow-hidden">
-          <span className="c-bl" /><span className="c-br" />
-          <Canvas camera={{ position: [0, 0.4, 6.2], fov: 55 }}>
+        <LaunchGate label="ENTER SKILL NEBULA" hint="▸ tap to boot 3D world · uses GPU" height={560} accent={theme.core}>
+          <Canvas
+            camera={{ position: [0, 0.4, 6.2], fov: 55 }}
+            dpr={[1, 1.6]}
+            gl={{ antialias: true, powerPreference: "high-performance" }}
+          >
             <Suspense fallback={null}>
               <ambientLight intensity={0.35} />
               <pointLight position={[5, 5, 5]} intensity={1.4} color={theme.a} />
               <pointLight position={[-5, -5, -5]} intensity={1.1} color={theme.b} />
-              <Stars radius={60} depth={40} count={2400} factor={3} fade speed={1} />
+              <Stars radius={60} depth={40} count={1200} factor={3} fade speed={1} />
               <CoreOrb color={theme.core} />
               <ConnectionLines color={theme.core} />
               <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
@@ -165,7 +169,6 @@ export function World3D() {
             ⌬ NEBULA.LIVE — 6 NODES SYNCED · THEME {theme.name}
           </div>
 
-          {/* theme switcher */}
           <div className="absolute bottom-3 right-3 flex gap-2">
             {THEMES.map((t, i) => (
               <motion.button
@@ -189,7 +192,7 @@ export function World3D() {
           <div className="absolute bottom-3 left-3 font-mono text-[10px] text-muted-foreground">
             ▸ 6 nodes · 2 probes · live recolor
           </div>
-        </div>
+        </LaunchGate>
       </div>
     </section>
   );
