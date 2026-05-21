@@ -5,63 +5,75 @@ interface Node {
   id: string; label: string; x: number; y: number; level: number; max: number; unlocked: boolean; branch: "core" | "design" | "engine";
   connects: string[];
   stack: string[];
-  projects: { name: string; blurb: string }[];
+  years: number;
+  xp: number;
+  highlights: string[];
+  projects: { name: string; blurb: string; tech: string[] }[];
 }
 
 const NODES: Node[] = [
   { id: "n1", label: "PYTHON", x: 50, y: 12, level: 5, max: 5, unlocked: true, branch: "core", connects: ["n2", "n3"],
-    stack: ["FastAPI", "Flask", "Pandas", "NumPy", "scikit-learn"],
+    stack: ["FastAPI", "Flask", "Pandas", "NumPy", "scikit-learn"], years: 4, xp: 9200,
+    highlights: ["Shipped 6 ML pipelines", "OWASP-clean APIs", "Async I/O fluency"],
     projects: [
-      { name: "Sentiment Engine", blurb: "Transformer-based review classifier · 92% F1." },
-      { name: "Recon Toolkit", blurb: "Async port scanner with rate-limited probing." },
+      { name: "Sentiment Engine", blurb: "Transformer-based review classifier · 92% F1.", tech: ["PyTorch", "HF Transformers", "FastAPI"] },
+      { name: "Recon Toolkit", blurb: "Async port scanner with rate-limited probing.", tech: ["asyncio", "scapy", "rich"] },
     ] },
   { id: "n2", label: "JAVASCRIPT", x: 25, y: 30, level: 4, max: 5, unlocked: true, branch: "core", connects: ["n4", "n5"],
-    stack: ["ES2024", "TypeScript", "Vite", "Bun"],
+    stack: ["ES2024", "TypeScript", "Vite", "Bun"], years: 3, xp: 7800,
+    highlights: ["Strict TS shop", "Edge-runtime aware", "Sub-100ms INP targets"],
     projects: [
-      { name: "Portfolio v3", blurb: "This site — TanStack Start + Three.js + GSAP timing." },
-      { name: "Real-time Whiteboard", blurb: "CRDT canvas synced over WebSockets." },
+      { name: "Portfolio v3", blurb: "This site — TanStack Start + Three.js + GSAP timing.", tech: ["React 19", "TanStack Start", "Three.js", "Framer Motion"] },
+      { name: "Real-time Whiteboard", blurb: "CRDT canvas synced over WebSockets.", tech: ["Yjs", "WebSocket", "Canvas API"] },
     ] },
   { id: "n3", label: "C LANG", x: 75, y: 30, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n6"],
-    stack: ["GCC", "Make", "POSIX", "valgrind"],
+    stack: ["GCC", "Make", "POSIX", "valgrind"], years: 3, xp: 6400,
+    highlights: ["Manual mem-mgmt", "Bitfield comfort", "Lock-free patterns"],
     projects: [
-      { name: "Mini Shell", blurb: "Pipes, jobs, signals · ~1.4k LOC." },
-      { name: "VM Interpreter", blurb: "Stack-based bytecode for a toy language." },
+      { name: "Mini Shell", blurb: "Pipes, jobs, signals · ~1.4k LOC.", tech: ["POSIX", "readline", "fork/exec"] },
+      { name: "VM Interpreter", blurb: "Stack-based bytecode for a toy language.", tech: ["C99", "Make", "Lex/Yacc"] },
     ] },
   { id: "n4", label: "HTML / CSS", x: 12, y: 52, level: 5, max: 5, unlocked: true, branch: "design", connects: ["n7"],
-    stack: ["Tailwind v4", "OKLCH", "Container queries", "ViewTransitions"],
+    stack: ["Tailwind v4", "OKLCH", "Container queries", "ViewTransitions"], years: 4, xp: 8800,
+    highlights: ["Awwwards-grade polish", "a11y AA baseline", "Animation-first"],
     projects: [
-      { name: "Cinematic Hero", blurb: "Scroll-driven low-poly Three.js cover." },
-      { name: "Awwwards-style cards", blurb: "Magnetic hovers, conic gradient borders." },
+      { name: "Cinematic Hero", blurb: "Scroll-driven low-poly Three.js cover.", tech: ["Tailwind", "Three.js", "GSAP"] },
+      { name: "Magnetic Cards", blurb: "Conic gradient borders + magnetic hover.", tech: ["CSS @property", "framer-motion"] },
     ] },
   { id: "n5", label: "NODE.JS", x: 38, y: 52, level: 4, max: 5, unlocked: true, branch: "core", connects: ["n7"],
-    stack: ["Express", "tRPC", "Prisma", "Socket.IO"],
+    stack: ["Express", "tRPC", "Prisma", "Socket.IO"], years: 3, xp: 7200,
+    highlights: ["End-to-end typesafe", "RLS-aware queries", "Stream-first IO"],
     projects: [
-      { name: "API Gateway", blurb: "Edge-cached REST → GraphQL bridge." },
-      { name: "Chat Server", blurb: "Rooms, presence, typing indicators." },
+      { name: "API Gateway", blurb: "Edge-cached REST → GraphQL bridge.", tech: ["tRPC", "Redis", "Cloudflare Workers"] },
+      { name: "Chat Server", blurb: "Rooms, presence, typing indicators.", tech: ["Socket.IO", "Redis Pub/Sub"] },
     ] },
   { id: "n6", label: "NETWORKING", x: 78, y: 52, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n8"],
-    stack: ["TCP/IP", "DNS", "TLS", "Wireshark"],
+    stack: ["TCP/IP", "DNS", "TLS", "Wireshark"], years: 3, xp: 6100,
+    highlights: ["Packet-level debugging", "TLS 1.3 mental model", "DNSSEC literate"],
     projects: [
-      { name: "Latency Heatmap", blurb: "Traceroute → interactive globe vis." },
-      { name: "Packet Sniffer", blurb: "Educational raw-socket capture tool." },
+      { name: "Latency Heatmap", blurb: "Traceroute → interactive globe vis.", tech: ["mtr", "D3", "WebGL"] },
+      { name: "Packet Sniffer", blurb: "Educational raw-socket capture tool.", tech: ["scapy", "raw sockets"] },
     ] },
   { id: "n7", label: "AI / NLP", x: 25, y: 74, level: 4, max: 5, unlocked: true, branch: "design", connects: ["n9"],
-    stack: ["LangChain", "OpenAI", "Gemini", "Pinecone", "HF Transformers"],
+    stack: ["LangChain", "OpenAI", "Gemini", "Pinecone", "HF Transformers"], years: 2, xp: 7400,
+    highlights: ["RAG over 10k+ docs", "Streaming LLM UX", "Eval harness in-house"],
     projects: [
-      { name: "Resume Coach", blurb: "LLM critique with RAG over job listings." },
-      { name: "Doc-QA Bot", blurb: "PDF embed → semantic search → answer." },
+      { name: "Resume Coach", blurb: "LLM critique with RAG over job listings.", tech: ["LangChain", "Pinecone", "OpenAI"] },
+      { name: "Doc-QA Bot", blurb: "PDF embed → semantic search → answer.", tech: ["pdf.js", "Gemini", "pgvector"] },
     ] },
   { id: "n8", label: "CYBER SEC", x: 78, y: 74, level: 3, max: 5, unlocked: true, branch: "engine", connects: ["n9"],
-    stack: ["Burp Suite", "Nmap", "OWASP Top 10", "Hashcat"],
+    stack: ["Burp Suite", "Nmap", "OWASP Top 10", "Hashcat"], years: 2, xp: 5200,
+    highlights: ["20+ CTF solves", "Auth & session audits", "Threat-model first"],
     projects: [
-      { name: "CTF Writeups", blurb: "Web + crypto challenges, 20+ solves." },
-      { name: "Auth Audit", blurb: "Token replay + CSRF lab for an internal app." },
+      { name: "CTF Writeups", blurb: "Web + crypto challenges, 20+ solves.", tech: ["Burp", "CyberChef", "pwntools"] },
+      { name: "Auth Audit", blurb: "Token replay + CSRF lab for an internal app.", tech: ["OWASP ZAP", "JWT", "CSP"] },
     ] },
   { id: "n9", label: "FULL-STACK", x: 50, y: 92, level: 5, max: 5, unlocked: true, branch: "core", connects: [],
-    stack: ["React 19", "TanStack Start", "Supabase", "Stripe", "Cloudflare"],
+    stack: ["React 19", "TanStack Start", "Supabase", "Stripe", "Cloudflare"], years: 3, xp: 9600,
+    highlights: ["Ships solo end-to-end", "RLS + Edge + Auth wiring", "Design-system author"],
     projects: [
-      { name: "Arcade Portfolio", blurb: "This experience — terminal, AI co-pilot, 3D world." },
-      { name: "SaaS Starter", blurb: "Auth, billing, RLS, edge functions in one repo." },
+      { name: "Arcade Portfolio", blurb: "This experience — terminal, AI co-pilot, 3D world.", tech: ["TanStack Start", "Three.js", "AI SDK", "Framer Motion"] },
+      { name: "SaaS Starter", blurb: "Auth, billing, RLS, edge functions in one repo.", tech: ["Supabase", "Stripe", "Cloudflare Workers"] },
     ] },
 ];
 
@@ -172,6 +184,26 @@ export function SkillTree() {
                   </div>
                   <span className="font-mono text-[10px]" style={{ color }}>LV {node.level}/{node.max}</span>
                 </div>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
+                    <div className="font-display text-base" style={{ color }}>{node.years}y</div>
+                    <div className="font-mono text-[8px] text-muted-foreground tracking-widest">EXP</div>
+                  </div>
+                  <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
+                    <div className="font-display text-base" style={{ color }}>{node.xp.toLocaleString()}</div>
+                    <div className="font-mono text-[8px] text-muted-foreground tracking-widest">XP</div>
+                  </div>
+                  <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
+                    <div className="font-display text-base" style={{ color }}>{node.projects.length}</div>
+                    <div className="font-mono text-[8px] text-muted-foreground tracking-widest">SHIPPED</div>
+                  </div>
+                </div>
+                <div className="font-mono text-[10px] text-muted-foreground mb-1 tracking-widest">▸ HIGHLIGHTS</div>
+                <ul className="mb-3 space-y-0.5">
+                  {node.highlights.map((h) => (
+                    <li key={h} className="font-mono text-[10px] text-foreground/75">▹ {h}</li>
+                  ))}
+                </ul>
                 <div className="font-mono text-[10px] text-muted-foreground mb-1 tracking-widest">▸ STACK</div>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {node.stack.map((s) => (
@@ -186,10 +218,16 @@ export function SkillTree() {
                     <motion.div
                       key={p.name}
                       initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
-                      className="font-mono text-[11px] leading-snug"
+                      className="font-mono text-[11px] leading-snug border-l-2 pl-2"
+                      style={{ borderColor: `${color}55` }}
                     >
                       <div className="font-display tracking-wide" style={{ color }}>› {p.name}</div>
                       <div className="text-foreground/70">{p.blurb}</div>
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {p.tech.map((t) => (
+                          <span key={t} className="text-[9px] px-1 py-px border" style={{ borderColor: `${color}33`, color: `${color}cc` }}>{t}</span>
+                        ))}
+                      </div>
                     </motion.div>
                   ))}
                 </div>
