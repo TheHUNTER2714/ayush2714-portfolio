@@ -71,6 +71,7 @@ export function FlightFalcon() {
   });
   const rotate = useTransform(progress, [0, 0.5, 1], [-12, 0, 12]);
   const scale = useTransform(progress, [0, 0.5, 1], [0.6, 1.05, 0.55]);
+  const opacity = useTransform(progress, [0, 0.05, 0.95, 1], [0, 1, 1, 0]);
 
   const xs = useSpring(x, { stiffness: 70, damping: 18, mass: 0.6 });
   const ys = useSpring(y, { stiffness: 70, damping: 18, mass: 0.6 });
@@ -83,7 +84,7 @@ export function FlightFalcon() {
       className="absolute z-30 pointer-events-none hidden md:block"
       style={{
         top: 0, left: 0,
-        x: xs, y: ys, rotate, scale,
+        x: xs, y: ys, rotate, scale, opacity,
         translateX: "-50%", translateY: "-50%",
       }}
     >

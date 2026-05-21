@@ -3,11 +3,12 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Falcon } from "./Falcon";
 
 /**
- * Persistent falcon companion: tracks scroll progress on the Y axis and
- * cursor on the X axis with springy easing, leaving an ion trail.
+ * Persistent companion. Hides until the user has scrolled past the hero,
+ * fades out near the footer, and tracks cursor with spring easing.
  */
 export function ScrollFalcon() {
   const [progress, setProgress] = useState(0);
+  const [section, setSection] = useState("");
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
 
@@ -15,6 +16,16 @@ export function ScrollFalcon() {
     const onScroll = () => {
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       setProgress(window.scrollY / max);
+      // detect active section id by reading whichever element is closest to viewport center
+      const els = Array.from(document.querySelectorAll<HTMLElement>("main > div > [id]"));
+      const center = window.innerHeight * 0.45;
+      let best = ""; let bestDist = Infinity;
+      for (const el of els) {
+        const r = el.getBoundingClientRect();
+        const d = Math.abs(r.top - center);
+        if (d < bestDist) { bestDist = d; best = el.id; }
+      }
+      setSection(best);
     };
     const onMove = (e: MouseEvent) => {
       mx.set(e.clientX / window.innerWidth);
@@ -29,38 +40,37 @@ export function ScrollFalcon() {
     };
   }, [mx, my]);
 
-  // Falcon hovers near right edge, drifts down with scroll and toward cursor
-  const xSpring = useSpring(useTransform(mx, [0, 1], [-40, 40]), { stiffness: 60, damping: 14 });
-  const ySpring = useSpring(useTransform(my, [0, 1], [-20, 20]), { stiffness: 60, damping: 14 });
+  const xSpring = useSpring(useTransform(mx, [0, 1], [-30, 30]), { stiffness: 50, damping: 16 });
+  const ySpring = useSpring(useTransform(my, [0, 1], [-16, 16]), { stiffness: 50, damping: 16 });
+  const tilt = useTransform(my, [0, 1], [6, -6]);
 
-  // vertical position along viewport mapped from scroll progress
-  const top = 8 + progress * 78; // % of viewport
-  const tilt = useTransform(my, [0, 1], [8, -8]);
+  // Hide near hero (so falcon doesn't fight the character logo) and near footer
+  const visible = progress > 0.05 && progress < 0.95;
+  // Sit roughly mid-viewport, drift down as user scrolls
+  const top = 14 + progress * 64;
 
   return (
     <motion.div
       aria-hidden
-      className="fixed right-4 md:right-8 z-30 pointer-events-none hidden md:block"
-      style={{
-        top: `${top}vh`,
-        x: xSpring,
-        y: ySpring,
-        rotate: tilt,
-      }}
-      initial={{ opacity: 0, scale: 0.6 }}
-      animate={{ opacity: 0.9, scale: 1 }}
-      transition={{ duration: 1.2, delay: 0.4 }}
+      className="fixed right-4 md:right-6 z-30 pointer-events-none hidden md:block"
+      style={{ top: `${top}vh`, x: xSpring, y: ySpring, rotate: tilt }}
+      animate={{ opacity: visible ? 0.92 : 0, scale: visible ? 1 : 0.7 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* ion trail */}
-      <div className="absolute right-[80%] top-1/2 -translate-y-1/2 w-40 h-1.5 rounded-full"
+      <div className="absolute right-[78%] top-1/2 -translate-y-1/2 w-32 h-1 rounded-full"
         style={{
-          background: "linear-gradient(90deg, transparent, oklch(0.82 0.2 195 / 0.6), oklch(0.72 0.28 330 / 0.8))",
-          filter: "blur(3px)",
+          background: "linear-gradient(90deg, transparent, oklch(0.82 0.2 195 / 0.55), oklch(0.72 0.28 330 / 0.85))",
+          filter: "blur(2.5px)",
         }}
       />
-      <Falcon size={120} intense />
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 font-mono text-[9px] tracking-widest text-primary/80 whitespace-nowrap">
-        FALCON · TRACKING {Math.round(progress * 100)}%
+      <Falcon size={96} intense />
+      {/* HUD readout */}
+      <div className="absolute -bottom-3 right-0 text-right font-mono leading-tight">
+        <div className="text-[9px] tracking-[0.3em] text-primary/85">FALCON.SYNC</div>
+        <div className="text-[8px] tracking-widest text-muted-foreground">
+          {String(Math.round(progress * 100)).padStart(3, "0")}% · {(section || "STANDBY").toUpperCase().slice(0, 14)}
+        </div>
       </div>
     </motion.div>
   );
