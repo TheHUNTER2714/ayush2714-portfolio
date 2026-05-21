@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Falcon } from "./Falcon";
-import { Avatar3D } from "./Avatar3D";
+import { PortraitAvatar3D } from "./PortraitAvatar3D";
 
 const BIO_LINES = [
   "> booting AYUSH.AGNIHOTRI ...",
@@ -56,6 +56,7 @@ export function Character() {
           <motion.div
             initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} className="mb-4"
+            data-falcon-origin
           >
             <Falcon size={120} />
           </motion.div>
@@ -210,7 +211,7 @@ export function Character() {
           viewport={{ once: true }} transition={{ duration: 0.7 }}
           className="space-y-5"
         >
-          <Avatar3D />
+          <PortraitAvatar3D />
           <div className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden">
             <span className="c-bl" /><span className="c-br" />
             <div className="absolute inset-0 pointer-events-none">
