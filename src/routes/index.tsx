@@ -83,6 +83,7 @@ function Index() {
       {booted && <PhaseTracker />}
       {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
       {booted && <ScrollFalcon />}
+      {booted && <FlightFalcon />}
 
       <div className="relative">
         {SECTIONS.map((s) => (
