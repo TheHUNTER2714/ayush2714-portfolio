@@ -151,8 +151,34 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
               <span className="font-mono text-[10px] text-muted-foreground">RARITY</span>
               <span className="font-mono text-[10px]" style={{ color }}>{t.rarity}</span>
             </div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="font-mono text-[10px] text-muted-foreground">SCORE</span>
+              <span className="font-mono text-xs"><CountUp to={t.score} color={color} /> XP</span>
+            </div>
+            {/* score bar */}
+            <div className="mt-1.5 h-1 bg-secondary/60 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }} whileInView={{ width: `${Math.min(100, t.score / 100)}%` }}
+                viewport={{ once: true }} transition={{ duration: 1.6, delay: idx * 0.08, ease: "easeOut" }}
+                className="h-full" style={{ background: `linear-gradient(90deg, ${color}, ${color}66)` }}
+              />
+            </div>
           </div>
         </div>
+
+        {/* perimeter trace */}
+        <motion.span
+          className="absolute inset-0 pointer-events-none"
+          initial={{ opacity: 0 }} animate={{ opacity: hover ? 1 : 0 }}
+          style={{
+            background: `linear-gradient(90deg, transparent, ${color}, transparent) top/200% 1px no-repeat,
+                         linear-gradient(0deg, transparent, ${color}, transparent) right/1px 200% no-repeat,
+                         linear-gradient(90deg, transparent, ${color}, transparent) bottom/200% 1px no-repeat,
+                         linear-gradient(0deg, transparent, ${color}, transparent) left/1px 200% no-repeat`,
+            backgroundPosition: hover ? "100% 0,100% 100%,0 100%,0 0" : "0 0,100% 0,100% 100%,0 100%",
+            transition: "background-position 1.4s linear",
+          }}
+        />
 
         <motion.div
           initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
@@ -160,6 +186,7 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
           className="absolute bottom-0 left-0 right-0 h-[2px] origin-left"
           style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
         />
+
       </motion.div>
     </motion.div>
   );
