@@ -18,7 +18,6 @@ import { GithubStats } from "@/components/game/GithubStats";
 import { AIAssistant } from "@/components/game/AIAssistant";
 import { World3D } from "@/components/game/World3D";
 import { ScrollFalcon } from "@/components/game/ScrollFalcon";
-import { FlightFalcon } from "@/components/game/FlightFalcon";
 
 
 export const Route = createFileRoute("/")({
@@ -83,7 +82,6 @@ function Index() {
       {booted && <PhaseTracker />}
       {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
       {booted && <ScrollFalcon />}
-      {booted && <FlightFalcon />}
 
       <div className="relative">
         {SECTIONS.map((s) => (

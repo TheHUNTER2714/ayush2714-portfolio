@@ -1,10 +1,19 @@
 import { motion } from "framer-motion";
 
 /**
- * Realistic techno-falcon: layered SVG with circuit feathers, glowing eye,
- * holographic plumage, scanning HUD reticle and afterburner trails.
+ * Phoenix — fire-themed mythic raptor. Same API as the old Falcon
+ * component so all existing import sites keep working. Warm ember
+ * palette, plume of flame trails, glowing core, scanning HUD ring.
+ *
+ * Props:
+ *  - size: pixel width
+ *  - intense: show HUD readouts
  */
 export function Falcon({ size = 160, intense = false }: { size?: number; intense?: boolean }) {
+  return <Phoenix size={size} intense={intense} />;
+}
+
+export function Phoenix({ size = 160, intense = false }: { size?: number; intense?: boolean }) {
   const w = size;
   const h = size * 0.72;
   return (
@@ -13,166 +22,166 @@ export function Falcon({ size = 160, intense = false }: { size?: number; intense
       initial={{ x: -120, opacity: 0, rotate: -10 }}
       animate={{ x: 0, opacity: 1, rotate: 0 }}
       transition={{ type: "spring", stiffness: 80, damping: 14, delay: 0.1 }}
-      className="drop-shadow-[0_0_28px_oklch(0.82_0.18_195_/_0.75)] select-none"
+      className="drop-shadow-[0_0_28px_oklch(0.78_0.22_45_/_0.8)] select-none"
     >
       <defs>
-        <linearGradient id="fbody" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="oklch(0.22 0.05 250)" />
-          <stop offset="55%" stopColor="oklch(0.32 0.10 230)" />
-          <stop offset="100%" stopColor="oklch(0.18 0.04 260)" />
+        <linearGradient id="pbody" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="oklch(0.32 0.18 25)" />
+          <stop offset="55%" stopColor="oklch(0.55 0.22 35)" />
+          <stop offset="100%" stopColor="oklch(0.22 0.14 20)" />
         </linearGradient>
-        <linearGradient id="fwing" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="oklch(0.82 0.18 195)" />
-          <stop offset="60%" stopColor="oklch(0.55 0.18 250)" />
-          <stop offset="100%" stopColor="oklch(0.72 0.22 330)" />
+        <linearGradient id="pwing" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="oklch(0.95 0.22 80)" />
+          <stop offset="45%" stopColor="oklch(0.78 0.25 45)" />
+          <stop offset="100%" stopColor="oklch(0.55 0.28 18)" />
         </linearGradient>
-        <linearGradient id="fedge" x1="0" x2="1">
-          <stop offset="0%" stopColor="oklch(0.95 0.15 195 / 0)" />
-          <stop offset="50%" stopColor="oklch(0.95 0.15 195 / 0.95)" />
-          <stop offset="100%" stopColor="oklch(0.95 0.15 195 / 0)" />
+        <linearGradient id="pedge" x1="0" x2="1">
+          <stop offset="0%" stopColor="oklch(0.99 0.18 80 / 0)" />
+          <stop offset="50%" stopColor="oklch(0.99 0.18 80 / 0.95)" />
+          <stop offset="100%" stopColor="oklch(0.99 0.18 80 / 0)" />
         </linearGradient>
-        <radialGradient id="feye" cx="0.5" cy="0.5">
-          <stop offset="0%" stopColor="oklch(0.98 0.2 30)" />
-          <stop offset="40%" stopColor="oklch(0.78 0.28 30)" />
-          <stop offset="100%" stopColor="oklch(0.35 0.18 25 / 0)" />
+        <radialGradient id="pcore" cx="0.5" cy="0.5">
+          <stop offset="0%" stopColor="oklch(0.98 0.22 90)" />
+          <stop offset="45%" stopColor="oklch(0.78 0.28 35)" />
+          <stop offset="100%" stopColor="oklch(0.35 0.2 20 / 0)" />
         </radialGradient>
-        <linearGradient id="fstreak" x1="0" x2="1" y1="0.5" y2="0.5">
-          <stop offset="0%" stopColor="oklch(0.82 0.18 195 / 0)" />
-          <stop offset="100%" stopColor="oklch(0.82 0.18 195 / 0.9)" />
+        <linearGradient id="pstreak" x1="0" x2="1" y1="0.5" y2="0.5">
+          <stop offset="0%" stopColor="oklch(0.95 0.22 60 / 0)" />
+          <stop offset="60%" stopColor="oklch(0.85 0.25 35 / 0.9)" />
+          <stop offset="100%" stopColor="oklch(0.6 0.28 15 / 0.95)" />
         </linearGradient>
-        <filter id="fglow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="1.4" result="b" />
+        <filter id="pglow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2" result="b" />
           <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
-        <pattern id="fcircuit" width="14" height="14" patternUnits="userSpaceOnUse">
-          <path d="M0 7 H6 M8 7 H14 M7 0 V6 M7 8 V14" stroke="oklch(0.85 0.18 195 / 0.35)" strokeWidth="0.4" fill="none" />
-          <circle cx="7" cy="7" r="0.8" fill="oklch(0.95 0.18 195 / 0.5)" />
-        </pattern>
       </defs>
 
-      {/* afterburner streaks */}
-      {[0, 1, 2, 3].map((i) => (
-        <motion.line
+      {/* flame trail */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <motion.path
           key={i}
-          x1="0" x2="80" y1={70 + (i - 1.5) * 10} y2={70 + (i - 1.5) * 10}
-          stroke="url(#fstreak)" strokeWidth={i % 2 ? 1 : 1.6}
-          initial={{ x: -60, opacity: 0 }}
-          animate={{ x: [-60, 40, -60], opacity: [0, 0.95, 0] }}
-          transition={{ duration: 1.3 + i * 0.1, repeat: Infinity, delay: i * 0.12, ease: "easeOut" }}
+          d={`M${10 + i * 4} ${72 + (i - 2) * 6} Q${50 + i * 4} ${70 + (i - 2) * 4} ${88} ${72 + (i - 2) * 2}`}
+          stroke="url(#pstreak)" strokeWidth={i % 2 ? 1.4 : 2.2}
+          fill="none" strokeLinecap="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: [0, 1, 0], opacity: [0, 0.95, 0] }}
+          transition={{ duration: 1.3 + i * 0.12, repeat: Infinity, delay: i * 0.14, ease: "easeOut" }}
         />
       ))}
 
-      {/* body assembly: banks slightly */}
       <motion.g
-        animate={{ y: [0, -2.5, 0], rotate: [-1, 1, -1] }}
+        animate={{ y: [0, -3, 0], rotate: [-1.5, 1.5, -1.5] }}
         transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
         style={{ transformOrigin: "120px 85px" }}
       >
-        {/* tail fan with feather slots */}
+        {/* fan tail flames */}
         <g>
-          <path d="M50 85 L18 70 L20 100 Z" fill="url(#fbody)" />
-          <path d="M50 85 L18 70 L20 100 Z" fill="url(#fcircuit)" opacity="0.6" />
-          {[0, 1, 2, 3].map((i) => (
-            <line key={i} x1="48" y1={78 + i * 3} x2="22" y2={74 + i * 5} stroke="oklch(0.85 0.18 195 / 0.6)" strokeWidth="0.4" />
-          ))}
+          <path d="M50 85 Q22 64 14 76 Q18 86 14 96 Q22 108 50 88 Z" fill="url(#pwing)" opacity="0.9" />
+          <path d="M50 85 Q26 70 22 80 Q26 86 22 92 Q26 102 50 88 Z" fill="url(#pcore)" opacity="0.7" />
         </g>
 
-        {/* torso: armored plates */}
+        {/* torso */}
         <path
-          d="M50 85 Q105 65 170 72 Q198 76 212 86 Q198 96 170 100 Q105 105 50 85 Z"
-          fill="url(#fbody)" stroke="oklch(0.82 0.18 195 / 0.8)" strokeWidth="0.6"
+          d="M50 85 Q105 64 170 72 Q200 76 214 86 Q200 96 170 100 Q105 106 50 85 Z"
+          fill="url(#pbody)" stroke="oklch(0.95 0.2 60 / 0.8)" strokeWidth="0.7"
         />
-        <path
-          d="M50 85 Q105 65 170 72 Q198 76 212 86 Q198 96 170 100 Q105 105 50 85 Z"
-          fill="url(#fcircuit)" opacity="0.55"
-        />
-        {/* chest plate seams */}
-        <path d="M70 82 Q120 70 180 80" stroke="oklch(0.85 0.2 195 / 0.55)" strokeWidth="0.5" fill="none" />
-        <path d="M70 90 Q120 100 180 92" stroke="oklch(0.85 0.2 195 / 0.4)" strokeWidth="0.5" fill="none" />
+        {/* chest ember plates */}
+        <path d="M72 82 Q120 72 178 80" stroke="oklch(0.98 0.22 70 / 0.7)" strokeWidth="0.6" fill="none" />
+        <path d="M72 91 Q120 100 178 92" stroke="oklch(0.85 0.22 35 / 0.5)" strokeWidth="0.5" fill="none" />
+        <circle cx="100" cy="86" r="1.6" fill="oklch(0.98 0.22 80)" opacity="0.85" />
+        <circle cx="138" cy="86" r="1.6" fill="oklch(0.98 0.22 80)" opacity="0.85" />
 
-        {/* head + helmet */}
+        {/* head + crest of flame */}
         <g>
-          <path d="M205 86 Q215 70 226 78 Q230 86 224 92 Q214 98 205 92 Z" fill="url(#fbody)" stroke="oklch(0.85 0.2 195 / 0.7)" strokeWidth="0.5" />
-          {/* crest */}
-          <path d="M214 75 L218 64 L222 76 Z" fill="oklch(0.82 0.18 195)" opacity="0.9" />
+          <path d="M205 86 Q215 70 226 78 Q230 86 224 92 Q214 98 205 92 Z" fill="url(#pbody)" stroke="oklch(0.95 0.22 60 / 0.8)" strokeWidth="0.5" />
+          {/* flaming crest */}
+          <motion.path
+            d="M212 74 L216 56 L220 70 L224 52 L226 72 L220 80 Z"
+            fill="url(#pwing)" filter="url(#pglow)"
+            animate={{ opacity: [0.8, 1, 0.85], scaleY: [1, 1.1, 1] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+            style={{ transformOrigin: "220px 78px" }}
+          />
           {/* beak */}
-          <path d="M226 86 L240 84 L234 92 Z" fill="oklch(0.92 0.14 80)" stroke="oklch(0.4 0.1 60)" strokeWidth="0.4" />
-          {/* glowing eye */}
+          <path d="M226 86 L240 84 L234 92 Z" fill="oklch(0.95 0.18 70)" stroke="oklch(0.35 0.12 30)" strokeWidth="0.4" />
+          {/* glowing core eye */}
           <motion.circle
-            cx="220" cy="84" r="2.6" fill="url(#feye)" filter="url(#fglow)"
-            animate={{ opacity: [0.7, 1, 0.7] }} transition={{ duration: 1.4, repeat: Infinity }}
+            cx="220" cy="84" r="2.8" fill="url(#pcore)" filter="url(#pglow)"
+            animate={{ opacity: [0.7, 1, 0.7], scale: [1, 1.2, 1] }} transition={{ duration: 1.2, repeat: Infinity }}
           />
           <circle cx="220" cy="84" r="0.9" fill="oklch(0.99 0 0)" />
-          {/* HUD bar under eye */}
-          <rect x="214" y="89" width="10" height="0.8" fill="oklch(0.85 0.18 195 / 0.7)" />
         </g>
 
-        {/* UPPER WING — multiple primaries */}
+        {/* UPPER WING — flame primaries */}
         <motion.g
           style={{ transformOrigin: "115px 82px" }}
-          animate={{ rotate: [-10, 10, -10], scaleY: [1, 0.9, 1] }}
+          animate={{ rotate: [-12, 12, -12], scaleY: [1, 0.88, 1] }}
           transition={{ duration: 0.95, repeat: Infinity, ease: "easeInOut" }}
         >
           <path
-            d="M75 82 Q100 18 170 56 Q140 64 105 76 Z"
-            fill="url(#fwing)" stroke="oklch(0.95 0.16 195 / 0.9)" strokeWidth="0.5"
+            d="M75 82 Q98 14 172 52 Q140 64 105 76 Z"
+            fill="url(#pwing)" stroke="oklch(0.99 0.18 70 / 0.95)" strokeWidth="0.6"
           />
-          <path d="M75 82 Q100 18 170 56 Q140 64 105 76 Z" fill="url(#fcircuit)" opacity="0.35" />
-          {/* primary feather separators */}
           {[0, 1, 2, 3, 4, 5].map((i) => (
             <path
               key={i}
-              d={`M${95 + i * 12} ${72 - i * 2} Q${120 + i * 8} ${50 - i * 4} ${140 + i * 6} ${36 - i * 3}`}
-              stroke="oklch(0.95 0.16 195 / 0.7)" strokeWidth="0.5" fill="none"
+              d={`M${95 + i * 12} ${72 - i * 2} Q${120 + i * 8} ${48 - i * 4} ${140 + i * 6} ${32 - i * 3}`}
+              stroke="oklch(0.99 0.2 75 / 0.85)" strokeWidth="0.6" fill="none"
             />
           ))}
-          {/* wing edge highlight */}
-          <path d="M75 82 Q100 18 170 56" stroke="url(#fedge)" strokeWidth="1.2" fill="none" />
+          {/* ember tips */}
+          {[0, 1, 2, 3].map((i) => (
+            <motion.circle
+              key={`u${i}`}
+              cx={140 + i * 6} cy={32 - i * 3} r="1.6" fill="oklch(0.98 0.22 80)"
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.1 }}
+            />
+          ))}
+          <path d="M75 82 Q98 14 172 52" stroke="url(#pedge)" strokeWidth="1.4" fill="none" />
         </motion.g>
 
         {/* LOWER WING */}
         <motion.g
           style={{ transformOrigin: "115px 92px" }}
-          animate={{ rotate: [10, -10, 10], scaleY: [1, 0.9, 1] }}
+          animate={{ rotate: [12, -12, 12], scaleY: [1, 0.88, 1] }}
           transition={{ duration: 0.95, repeat: Infinity, ease: "easeInOut" }}
-          opacity="0.92"
+          opacity="0.95"
         >
           <path
-            d="M75 92 Q100 148 170 116 Q140 108 105 96 Z"
-            fill="url(#fwing)" stroke="oklch(0.95 0.16 195 / 0.7)" strokeWidth="0.5"
+            d="M75 92 Q98 152 172 120 Q140 108 105 96 Z"
+            fill="url(#pwing)" stroke="oklch(0.95 0.2 60 / 0.85)" strokeWidth="0.5"
           />
-          <path d="M75 92 Q100 148 170 116 Q140 108 105 96 Z" fill="url(#fcircuit)" opacity="0.3" />
           {[0, 1, 2, 3, 4].map((i) => (
             <path
               key={i}
-              d={`M${100 + i * 12} ${96 + i * 2} Q${125 + i * 8} ${122 + i * 4} ${145 + i * 6} ${134 + i * 3}`}
-              stroke="oklch(0.95 0.16 195 / 0.55)" strokeWidth="0.5" fill="none"
+              d={`M${100 + i * 12} ${96 + i * 2} Q${125 + i * 8} ${124 + i * 4} ${145 + i * 6} ${138 + i * 3}`}
+              stroke="oklch(0.95 0.22 50 / 0.7)" strokeWidth="0.55" fill="none"
             />
           ))}
         </motion.g>
 
         {/* talons */}
-        <g stroke="oklch(0.85 0.18 195)" strokeWidth="0.6" fill="none">
-          <path d="M150 102 L148 112 M156 102 L156 114 M162 102 L164 112" />
+        <g stroke="oklch(0.95 0.18 70)" strokeWidth="0.7" fill="none">
+          <path d="M150 102 L148 113 M156 102 L156 115 M162 102 L164 113" />
         </g>
       </motion.g>
 
       {/* targeting reticle */}
       <motion.g
         animate={{ rotate: 360 }}
-        transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
         style={{ transformOrigin: "120px 85px" }}
       >
-        <circle cx="120" cy="85" r="78" fill="none" stroke="oklch(0.72 0.22 330 / 0.28)" strokeWidth="0.5" strokeDasharray="2 5" />
-        <circle cx="120" cy="85" r="64" fill="none" stroke="oklch(0.82 0.18 195 / 0.18)" strokeWidth="0.4" strokeDasharray="1 3" />
+        <circle cx="120" cy="85" r="78" fill="none" stroke="oklch(0.85 0.22 35 / 0.3)" strokeWidth="0.5" strokeDasharray="2 5" />
+        <circle cx="120" cy="85" r="64" fill="none" stroke="oklch(0.98 0.2 70 / 0.22)" strokeWidth="0.4" strokeDasharray="1 3" />
         <path d="M40 85 L52 85 M188 85 L200 85 M120 12 L120 24 M120 146 L120 158"
-          stroke="oklch(0.85 0.2 195 / 0.7)" strokeWidth="0.6" />
+          stroke="oklch(0.95 0.22 60 / 0.75)" strokeWidth="0.6" />
       </motion.g>
 
-      {/* corner tick HUD */}
       {intense && (
-        <g fontFamily="monospace" fontSize="6" fill="oklch(0.85 0.2 195 / 0.9)">
-          <text x="6" y="12">LOCK 99.7%</text>
+        <g fontFamily="monospace" fontSize="6" fill="oklch(0.95 0.22 60 / 0.95)">
+          <text x="6" y="12">REKINDLE 99.7%</text>
           <text x="6" y="164">VEL 2718 KT</text>
           <text x="186" y="12">ALT 14.2k</text>
           <text x="186" y="164">PWR ▮▮▮▮▮</text>
