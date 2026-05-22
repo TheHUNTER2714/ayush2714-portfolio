@@ -1,5 +1,5 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useState, type MouseEvent } from "react";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
+import { useState, useEffect, type MouseEvent } from "react";
 
 interface Trophy {
   id: string; tier: "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
@@ -27,6 +27,7 @@ const TIER_COLOR: Record<string, string> = {
 function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
   const color = TIER_COLOR[t.tier];
   const [unlocking, setUnlocking] = useState(false);
+  const [hover, setHover] = useState(false);
 
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
@@ -52,11 +53,33 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
       style={{ perspective: 1000 }}
     >
       <motion.div
-        onMouseMove={onMove} onMouseLeave={onLeave}
+        onMouseMove={onMove}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => { onLeave(); setHover(false); }}
         style={{ rotateX: sRx, rotateY: sRy, transformStyle: "preserve-3d" }}
         className="relative corner-frame bg-card backdrop-blur-md p-5 overflow-hidden cursor-pointer"
       >
         <span className="c-bl" /><span className="c-br" />
+
+        {/* hover sparks */}
+        <AnimatePresence>
+          {hover && Array.from({ length: 8 }).map((_, i) => (
+            <motion.span
+              key={i}
+              initial={{ opacity: 0, x: "50%", y: "50%", scale: 0 }}
+              animate={{
+                opacity: [0, 1, 0],
+                x: `${50 + Math.cos((i / 8) * Math.PI * 2) * 80}%`,
+                y: `${50 + Math.sin((i / 8) * Math.PI * 2) * 80}%`,
+                scale: [0, 1, 0],
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.4, delay: i * 0.05, repeat: Infinity, repeatDelay: 0.4 }}
+              className="absolute w-1.5 h-1.5 rounded-full pointer-events-none"
+              style={{ background: color, boxShadow: `0 0 8px ${color}` }}
+            />
+          ))}
+        </AnimatePresence>
 
         {unlocking && (
           <motion.div
