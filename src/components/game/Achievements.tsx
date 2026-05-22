@@ -208,6 +208,25 @@ export function Achievements() {
           <p className="font-mono text-xs text-muted-foreground mt-3">HACKATHONS · INTERNSHIPS · CERTIFICATIONS</p>
         </motion.div>
 
+        {/* totals banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 corner-frame bg-card/70 backdrop-blur-md p-4"
+        >
+          <span className="c-bl" /><span className="c-br" />
+          {[
+            { l: "TOTAL XP", v: TROPHIES.reduce((a, t) => a + t.score, 0), c: "var(--legendary)" },
+            { l: "TROPHIES", v: TROPHIES.length, c: "var(--hud)" },
+            { l: "PLATINUM", v: TROPHIES.filter(t => t.tier === "PLATINUM").length, c: "var(--hud)" },
+            { l: "GOLD", v: TROPHIES.filter(t => t.tier === "GOLD").length, c: "var(--legendary)" },
+          ].map((s) => (
+            <div key={s.l} className="text-center">
+              <div className="font-display text-2xl md:text-3xl"><CountUp to={s.v} color={s.c} /></div>
+              <div className="font-mono text-[10px] text-muted-foreground mt-1 tracking-widest">{s.l}</div>
+            </div>
+          ))}
+        </motion.div>
+
         <div className="grid md:grid-cols-2 gap-5">
           {TROPHIES.map((t, i) => <TrophyCard key={t.id} t={t} idx={i} />)}
         </div>
