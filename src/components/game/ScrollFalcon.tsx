@@ -56,12 +56,13 @@ export function ScrollFalcon() {
 
   useEffect(() => {
     let last = gameBus.get().pulse;
-    return gameBus.subscribe((s) => {
+    const unsub = gameBus.subscribe((s) => {
       if (s.pulse !== last) {
         last = s.pulse;
         setTransmit((n) => n + 1);
       }
     });
+    return () => { unsub(); };
   }, []);
 
   const xSpring = useSpring(useTransform(mx, [0, 1], [-30, 30]), { stiffness: 50, damping: 16 });
