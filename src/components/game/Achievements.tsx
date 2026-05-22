@@ -1,21 +1,41 @@
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { useState, useEffect, type MouseEvent } from "react";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, animate, useInView } from "framer-motion";
+import { useState, useEffect, useRef, type MouseEvent } from "react";
 
 interface Trophy {
   id: string; tier: "BRONZE" | "SILVER" | "GOLD" | "PLATINUM";
-  title: string; desc: string; date: string; rarity: string; icon: string;
+  title: string; desc: string; date: string; rarity: string; icon: string; score: number;
 }
 
 const TROPHIES: Trophy[] = [
-  { id: "t1", tier: "PLATINUM", title: "🥇 AKTU AI Tech Hackathon", desc: "1st Position — AKTU AI Tech Guvi HCL Hackathon.", date: "2024", rarity: "TOP 1%", icon: "★" },
-  { id: "t2", tier: "GOLD", title: "Google Arcade Facilitator", desc: "Mentoring students in coding & development since April 2023.", date: "ONGOING", rarity: "ACTIVE", icon: "◈" },
-  { id: "t3", tier: "GOLD", title: "JP Morgan — Virtual Intern", desc: "Fintech-focused tasks; insights into banking systems & solutions.", date: "11.24 – 12.24", rarity: "COMPLETED", icon: "▲" },
-  { id: "t4", tier: "SILVER", title: "Tata Group — Virtual Intern", desc: "Data analysis on real-world datasets driving business decisions.", date: "10.24", rarity: "COMPLETED", icon: "❖" },
-  { id: "t5", tier: "SILVER", title: "IBM AI Programming", desc: "Certified — AI Programming track via IBM.", date: "2024", rarity: "CERTIFIED", icon: "◆" },
-  { id: "t6", tier: "SILVER", title: "IBM Cyber Security Fundamentals", desc: "Certified in core cybersecurity principles & defense.", date: "2024", rarity: "CERTIFIED", icon: "◆" },
-  { id: "t7", tier: "BRONZE", title: "Cisco Python Essentials 3", desc: "Advanced Python via Cisco Networking Academy.", date: "2024", rarity: "CERTIFIED", icon: "⬢" },
-  { id: "t8", tier: "BRONZE", title: "GitHub — Quad Badges", desc: "Pair Extraordinaire · Pull Shark · YOLO · Quickdraw.", date: "ONGOING", rarity: "STACKED", icon: "⬡" },
+  { id: "t1", tier: "PLATINUM", title: "🥇 AKTU AI Tech Hackathon", desc: "1st Position — AKTU AI Tech Guvi HCL Hackathon.", date: "2024", rarity: "TOP 1%", icon: "★", score: 9900 },
+  { id: "t2", tier: "GOLD", title: "Google Arcade Facilitator", desc: "Mentoring students in coding & development since April 2023.", date: "ONGOING", rarity: "ACTIVE", icon: "◈", score: 7800 },
+  { id: "t3", tier: "GOLD", title: "JP Morgan — Virtual Intern", desc: "Fintech-focused tasks; insights into banking systems & solutions.", date: "11.24 – 12.24", rarity: "COMPLETED", icon: "▲", score: 7200 },
+  { id: "t4", tier: "SILVER", title: "Tata Group — Virtual Intern", desc: "Data analysis on real-world datasets driving business decisions.", date: "10.24", rarity: "COMPLETED", icon: "❖", score: 6400 },
+  { id: "t5", tier: "SILVER", title: "IBM AI Programming", desc: "Certified — AI Programming track via IBM.", date: "2024", rarity: "CERTIFIED", icon: "◆", score: 5800 },
+  { id: "t6", tier: "SILVER", title: "IBM Cyber Security Fundamentals", desc: "Certified in core cybersecurity principles & defense.", date: "2024", rarity: "CERTIFIED", icon: "◆", score: 5600 },
+  { id: "t7", tier: "BRONZE", title: "Cisco Python Essentials 3", desc: "Advanced Python via Cisco Networking Academy.", date: "2024", rarity: "CERTIFIED", icon: "⬢", score: 4400 },
+  { id: "t8", tier: "BRONZE", title: "GitHub — Quad Badges", desc: "Pair Extraordinaire · Pull Shark · YOLO · Quickdraw.", date: "ONGOING", rarity: "STACKED", icon: "⬡", score: 4200 },
 ];
+
+function CountUp({ to, color }: { to: number; color: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const c = animate(0, to, {
+      duration: 1.6, ease: "easeOut",
+      onUpdate: (v) => setVal(Math.round(v)),
+    });
+    return () => c.stop();
+  }, [inView, to]);
+  return (
+    <span ref={ref} className="font-display tabular-nums" style={{ color, textShadow: `0 0 10px ${color}88` }}>
+      {val.toLocaleString()}
+    </span>
+  );
+}
+
 
 const TIER_COLOR: Record<string, string> = {
   PLATINUM: "var(--hud)",
@@ -131,8 +151,34 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
               <span className="font-mono text-[10px] text-muted-foreground">RARITY</span>
               <span className="font-mono text-[10px]" style={{ color }}>{t.rarity}</span>
             </div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="font-mono text-[10px] text-muted-foreground">SCORE</span>
+              <span className="font-mono text-xs"><CountUp to={t.score} color={color} /> XP</span>
+            </div>
+            {/* score bar */}
+            <div className="mt-1.5 h-1 bg-secondary/60 overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }} whileInView={{ width: `${Math.min(100, t.score / 100)}%` }}
+                viewport={{ once: true }} transition={{ duration: 1.6, delay: idx * 0.08, ease: "easeOut" }}
+                className="h-full" style={{ background: `linear-gradient(90deg, ${color}, ${color}66)` }}
+              />
+            </div>
           </div>
         </div>
+
+        {/* perimeter trace */}
+        <motion.span
+          className="absolute inset-0 pointer-events-none"
+          initial={{ opacity: 0 }} animate={{ opacity: hover ? 1 : 0 }}
+          style={{
+            background: `linear-gradient(90deg, transparent, ${color}, transparent) top/200% 1px no-repeat,
+                         linear-gradient(0deg, transparent, ${color}, transparent) right/1px 200% no-repeat,
+                         linear-gradient(90deg, transparent, ${color}, transparent) bottom/200% 1px no-repeat,
+                         linear-gradient(0deg, transparent, ${color}, transparent) left/1px 200% no-repeat`,
+            backgroundPosition: hover ? "100% 0,100% 100%,0 100%,0 0" : "0 0,100% 0,100% 100%,0 100%",
+            transition: "background-position 1.4s linear",
+          }}
+        />
 
         <motion.div
           initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }}
@@ -140,6 +186,7 @@ function TrophyCard({ t, idx }: { t: Trophy; idx: number }) {
           className="absolute bottom-0 left-0 right-0 h-[2px] origin-left"
           style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
         />
+
       </motion.div>
     </motion.div>
   );
@@ -159,6 +206,25 @@ export function Achievements() {
             <span className="text-[var(--legendary)]" style={{ textShadow: "0 0 20px var(--legendary)" }}>★</span>
           </h2>
           <p className="font-mono text-xs text-muted-foreground mt-3">HACKATHONS · INTERNSHIPS · CERTIFICATIONS</p>
+        </motion.div>
+
+        {/* totals banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 corner-frame bg-card/70 backdrop-blur-md p-4"
+        >
+          <span className="c-bl" /><span className="c-br" />
+          {[
+            { l: "TOTAL XP", v: TROPHIES.reduce((a, t) => a + t.score, 0), c: "var(--legendary)" },
+            { l: "TROPHIES", v: TROPHIES.length, c: "var(--hud)" },
+            { l: "PLATINUM", v: TROPHIES.filter(t => t.tier === "PLATINUM").length, c: "var(--hud)" },
+            { l: "GOLD", v: TROPHIES.filter(t => t.tier === "GOLD").length, c: "var(--legendary)" },
+          ].map((s) => (
+            <div key={s.l} className="text-center">
+              <div className="font-display text-2xl md:text-3xl"><CountUp to={s.v} color={s.c} /></div>
+              <div className="font-mono text-[10px] text-muted-foreground mt-1 tracking-widest">{s.l}</div>
+            </div>
+          ))}
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-5">
