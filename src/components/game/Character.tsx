@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Falcon } from "./Falcon";
-import { ItachiHolo } from "./ItachiHolo";
+import { CyborgHolo } from "./CyborgHolo";
 
 const BIO_LINES = [
   "> booting AYUSH.AGNIHOTRI ...",
