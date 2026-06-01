@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Falcon } from "./Falcon";
-import { ItachiHolo } from "./ItachiHolo";
+import { CyborgHolo } from "./CyborgHolo";
 
 const BIO_LINES = [
   "> booting AYUSH.AGNIHOTRI ...",
@@ -211,7 +211,7 @@ export function Character() {
           viewport={{ once: true }} transition={{ duration: 0.7 }}
           className="space-y-5"
         >
-          <ItachiHolo />
+          <CyborgHolo />
           <div className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden">
             <span className="c-bl" /><span className="c-br" />
             <div className="absolute inset-0 pointer-events-none">
