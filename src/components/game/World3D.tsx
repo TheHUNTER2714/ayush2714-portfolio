@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, OrbitControls, Stars, Text, Html, Trail } from "@react-three/drei";
+import { Float, OrbitControls, Stars, Text, Html, Trail, Sparkles } from "@react-three/drei";
 import { useRef, useState, Suspense, useMemo } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
@@ -78,12 +78,22 @@ function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }
   );
 }
 
-function CoreOrb({ color }: { color: string }) {
+function CoreOrb({ color, pulse }: { color: string; pulse: number }) {
   const ref = useRef<THREE.Mesh>(null);
+  const torusRef = useRef<THREE.Mesh>(null);
+  const knotRef = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
     if (ref.current) {
-      ref.current.rotation.y = clock.elapsedTime * 0.35;
-      ref.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.15;
+      ref.current.rotation.y = t * 0.35;
+      ref.current.rotation.x = Math.sin(t * 0.3) * 0.15;
+      const s = 1 + Math.sin(t * 2 + pulse) * 0.05;
+      ref.current.scale.setScalar(s);
+    }
+    if (torusRef.current) torusRef.current.rotation.x = t * 0.5;
+    if (knotRef.current) {
+      knotRef.current.rotation.y = -t * 0.4;
+      knotRef.current.rotation.z = t * 0.2;
     }
   });
   return (
@@ -95,6 +105,14 @@ function CoreOrb({ color }: { color: string }) {
       <mesh scale={0.7}>
         <icosahedronGeometry args={[0.6, 0]} />
         <meshBasicMaterial color={color} transparent opacity={0.08} />
+      </mesh>
+      <mesh ref={torusRef}>
+        <torusGeometry args={[1.1, 0.012, 8, 96]} />
+        <meshBasicMaterial color={color} transparent opacity={0.55} />
+      </mesh>
+      <mesh ref={knotRef} scale={0.45}>
+        <torusKnotGeometry args={[1, 0.06, 96, 8]} />
+        <meshBasicMaterial color={color} transparent opacity={0.35} wireframe />
       </mesh>
     </group>
   );
@@ -134,6 +152,7 @@ function ConnectionLines({ color }: { color: string }) {
 
 export function World3D() {
   const [themeIdx, setThemeIdx] = useState(0);
+  const [pulse, setPulse] = useState(0);
   const theme = THEMES[themeIdx];
 
   return (
@@ -141,33 +160,59 @@ export function World3D() {
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-8">
           <div className="font-mono text-xs text-primary mb-2">▸ /worlds/skill-nebula.glb</div>
-          <h2 className="font-display font-black text-4xl md:text-6xl text-glow">3D <span className="text-accent text-glow-accent">WORLD</span></h2>
-          <p className="font-mono text-xs text-muted-foreground mt-2">Drag to orbit · scroll to zoom · hover a node · cycle themes</p>
+          <h2 className="font-display font-black text-4xl md:text-6xl text-glow">SKILL <span className="text-accent text-glow-accent">NEBULA</span></h2>
+          <p className="font-mono text-xs text-muted-foreground mt-2">drag to orbit · scroll to zoom · hover a node · cycle themes · pulse to ignite</p>
         </motion.div>
 
-        <LaunchGate label="ENTER SKILL NEBULA" hint="▸ tap to boot 3D world · uses GPU" height={560} accent={theme.core}>
+        <LaunchGate label="ENTER SKILL NEBULA" hint="▸ tap to boot 3D world · uses GPU" height={600} accent={theme.core}>
           <Canvas
             camera={{ position: [0, 0.4, 6.2], fov: 55 }}
             dpr={[1, 1.6]}
             gl={{ antialias: true, powerPreference: "high-performance" }}
           >
             <Suspense fallback={null}>
-              <ambientLight intensity={0.35} />
-              <pointLight position={[5, 5, 5]} intensity={1.4} color={theme.a} />
-              <pointLight position={[-5, -5, -5]} intensity={1.1} color={theme.b} />
-              <Stars radius={60} depth={40} count={1200} factor={3} fade speed={1} />
-              <CoreOrb color={theme.core} />
+              <ambientLight intensity={0.4} />
+              <pointLight position={[5, 5, 5]} intensity={1.6} color={theme.a} />
+              <pointLight position={[-5, -5, -5]} intensity={1.2} color={theme.b} />
+              <pointLight position={[0, -4, 4]} intensity={0.8} color={theme.core} />
+              <Stars radius={70} depth={45} count={1800} factor={3.2} fade speed={1} />
+              <Sparkles count={120} scale={8} size={2} speed={0.4} color={theme.core} opacity={0.7} />
+              <CoreOrb color={theme.core} pulse={pulse} />
               <ConnectionLines color={theme.core} />
               <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
               <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />
+              <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />
               {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
-              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.6} minDistance={4} maxDistance={10} />
+              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
             </Suspense>
           </Canvas>
 
+          {/* Pulse ring overlay (DOM) */}
+          {pulse > 0 && (
+            <motion.div
+              key={pulse}
+              initial={{ scale: 0.2, opacity: 0.8 }}
+              animate={{ scale: 2.6, opacity: 0 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
+              className="absolute inset-0 m-auto w-40 h-40 rounded-full pointer-events-none"
+              style={{ boxShadow: `0 0 0 3px ${theme.core}aa, 0 0 60px ${theme.core}` }}
+            />
+          )}
+
           <div className="absolute top-3 left-3 font-mono text-[10px] text-primary/80">
-            ⌬ NEBULA.LIVE — 6 NODES SYNCED · THEME {theme.name}
+            ⌬ NEBULA.LIVE — 6 NODES · 3 PROBES · THEME {theme.name}
           </div>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
+            onClick={() => setPulse((p) => p + 1)}
+            className="absolute top-3 right-3 corner-frame font-mono text-[10px] tracking-widest px-3 py-1.5 backdrop-blur-md"
+            style={{ background: `${theme.core}22`, color: theme.core, boxShadow: `0 0 18px ${theme.core}55` }}
+          >
+            <span className="c-bl" /><span className="c-br" />
+            ⚡ FIRE PULSE
+          </motion.button>
 
           <div className="absolute bottom-3 right-3 flex gap-2">
             {THEMES.map((t, i) => (
@@ -190,7 +235,7 @@ export function World3D() {
           </div>
 
           <div className="absolute bottom-3 left-3 font-mono text-[10px] text-muted-foreground">
-            ▸ 6 nodes · 2 probes · live recolor
+            ▸ sparkles · torus knot · 6 nodes · 3 probes
           </div>
         </LaunchGate>
       </div>
