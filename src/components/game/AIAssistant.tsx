@@ -2,7 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { Falcon } from "./Falcon";
+import { RobotAI } from "./RobotAI";
 
 const SUGGEST = [
   "Who is Ayush?",
@@ -44,44 +44,16 @@ export function AIAssistant() {
           <div className="hidden lg:flex flex-col items-center pt-6 relative">
             <motion.div
               data-falcon-target
-              animate={isBusy ? { y: [0, -6, 0], rotate: [-3, 3, -3] } : {}}
+              animate={isBusy ? { y: [0, -4, 0] } : {}}
               transition={{ duration: 0.6, repeat: isBusy ? Infinity : 0 }}
               className="relative"
             >
-              <Falcon size={140} intense />
-              {/* shockwave on transmission fire */}
-              <AnimatePresence>
-                {fire > 0 && (
-                  <motion.span
-                    key={fire}
-                    initial={{ scale: 0.3, opacity: 0.9 }}
-                    animate={{ scale: 2.6, opacity: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.1, ease: "easeOut" }}
-                    onAnimationComplete={() => setFire(0)}
-                    className="absolute inset-0 rounded-full pointer-events-none"
-                    style={{ boxShadow: "0 0 0 3px oklch(0.82 0.2 195 / 0.7), 0 0 40px oklch(0.72 0.28 330 / 0.8)" }}
-                  />
-                )}
-              </AnimatePresence>
-              {/* muzzle flash burst */}
-              <AnimatePresence>
-                {fire > 0 && (
-                  <motion.div
-                    key={`b${fire}`}
-                    initial={{ scale: 0, opacity: 1 }}
-                    animate={{ scale: 1.6, opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full pointer-events-none"
-                    style={{ background: "radial-gradient(circle, oklch(0.95 0.2 195 / 0.7), transparent 70%)" }}
-                  />
-                )}
-              </AnimatePresence>
+              <RobotAI size={180} busy={isBusy} fire={fire} />
             </motion.div>
             {isBusy && (
               <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="font-mono text-[10px] text-primary mt-2 tracking-widest"
+                className="font-mono text-[10px] text-primary mt-4 tracking-widest"
               >
                 ▸ TRANSMITTING<motion.span
                   animate={{ opacity: [0.3, 1, 0.3] }}
