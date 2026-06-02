@@ -9,7 +9,7 @@ import { SkillTree } from "@/components/game/SkillTree";
 import { Achievements } from "@/components/game/Achievements";
 import { MiniGame } from "@/components/game/MiniGame";
 import { Contact } from "@/components/game/Contact";
-import { PlayInvite } from "@/components/game/PlayInvite";
+
 import { PhaseTracker } from "@/components/game/PhaseTracker";
 import { SectionTransition } from "@/components/game/SectionTransition";
 import { gameBus, SECTION_HUE } from "@/components/game/gameState";
@@ -80,7 +80,7 @@ function Index() {
 
       {booted && <HUD level={42} zone={zone} active={active} onNav={scrollTo} />}
       {booted && <PhaseTracker />}
-      {booted && <PlayInvite active={active} onJump={() => scrollTo("arcade")} />}
+      
       {booted && <ScrollFalcon />}
 
       <div className="relative">
