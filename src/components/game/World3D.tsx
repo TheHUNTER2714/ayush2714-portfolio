@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, OrbitControls, Stars, Text, Html, Trail } from "@react-three/drei";
+import { Float, OrbitControls, Stars, Text, Html, Trail, Sparkles } from "@react-three/drei";
 import { useRef, useState, Suspense, useMemo } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
@@ -78,12 +78,22 @@ function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }
   );
 }
 
-function CoreOrb({ color }: { color: string }) {
+function CoreOrb({ color, pulse }: { color: string; pulse: number }) {
   const ref = useRef<THREE.Mesh>(null);
+  const torusRef = useRef<THREE.Mesh>(null);
+  const knotRef = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
     if (ref.current) {
-      ref.current.rotation.y = clock.elapsedTime * 0.35;
-      ref.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.15;
+      ref.current.rotation.y = t * 0.35;
+      ref.current.rotation.x = Math.sin(t * 0.3) * 0.15;
+      const s = 1 + Math.sin(t * 2 + pulse) * 0.05;
+      ref.current.scale.setScalar(s);
+    }
+    if (torusRef.current) torusRef.current.rotation.x = t * 0.5;
+    if (knotRef.current) {
+      knotRef.current.rotation.y = -t * 0.4;
+      knotRef.current.rotation.z = t * 0.2;
     }
   });
   return (
@@ -95,6 +105,14 @@ function CoreOrb({ color }: { color: string }) {
       <mesh scale={0.7}>
         <icosahedronGeometry args={[0.6, 0]} />
         <meshBasicMaterial color={color} transparent opacity={0.08} />
+      </mesh>
+      <mesh ref={torusRef}>
+        <torusGeometry args={[1.1, 0.012, 8, 96]} />
+        <meshBasicMaterial color={color} transparent opacity={0.55} />
+      </mesh>
+      <mesh ref={knotRef} scale={0.45}>
+        <torusKnotGeometry args={[1, 0.06, 96, 8]} />
+        <meshBasicMaterial color={color} transparent opacity={0.35} wireframe />
       </mesh>
     </group>
   );
