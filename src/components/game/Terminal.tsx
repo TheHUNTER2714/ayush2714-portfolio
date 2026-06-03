@@ -111,7 +111,7 @@ type Ctx = { start: number; setAccent: (c: string) => void; toggleMatrix: () => 
 
 export function Terminal() {
   const [lines, setLines] = useState<Line[]>([
-    { kind: "sys", text: "PHOENIX-SHELL v1.1 — boot complete. type 'help'." },
+    { kind: "sys", text: "PHOENIX-SHELL v1.2 — boot complete. type `help` for the full codex." },
   ]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
