@@ -248,9 +248,53 @@ export function Character() {
               </div>
             ))}
           </div>
-          </div>
         </motion.div>
+      </div>
       </div>
     </section>
   );
 }
+
+function NameGlyph({ text, stroke, delay = 0 }: { text: string; stroke: string; delay?: number }) {
+  return (
+    <span className="block relative overflow-hidden">
+      <motion.span
+        className="block"
+        initial={{ y: "110%" }}
+        whileInView={{ y: "0%" }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          color: "transparent",
+          WebkitTextStroke: `2px ${stroke}`,
+          textShadow: `0 0 28px ${stroke}66`,
+        }}
+      >
+        {text}
+      </motion.span>
+      {/* glitch shimmer */}
+      <motion.span
+        aria-hidden
+        className="absolute inset-0 block"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: [0, 0.8, 0], x: [0, 4, -3, 0] }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, delay: delay + 0.4 }}
+        style={{ color: stroke, mixBlendMode: "screen" }}
+      >
+        {text}
+      </motion.span>
+      {/* underline sweep */}
+      <motion.span
+        aria-hidden
+        className="absolute left-0 bottom-1 h-[3px]"
+        initial={{ width: 0 }}
+        whileInView={{ width: "100%" }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.1, delay: delay + 0.5, ease: "easeOut" }}
+        style={{ background: `linear-gradient(90deg, transparent, ${stroke}, transparent)`, boxShadow: `0 0 12px ${stroke}` }}
+      />
+    </span>
+  );
+}
+
