@@ -14,28 +14,45 @@ const ASCII_PHOENIX = String.raw`
        /  ||  \\
 `;
 
+const HELP_TEXT = [
+  "╔══════════════════════════════════════════════════╗",
+  "║  PHOENIX-SHELL · COMMAND CODEX · v1.2            ║",
+  "╚══════════════════════════════════════════════════╝",
+  "",
+  "[ IDENTITY ]",
+  "  whoami        — agent dossier",
+  "  skills        — equipped tech stack",
+  "  socials       — github · linkedin · portfolio",
+  "  contact       — direct comms channel",
+  "  resume        — download CV.pdf",
+  "  github        — open profile in new tab",
+  "",
+  "[ MISSIONS ]",
+  "  projects      — shipped quests roster",
+  "",
+  "[ FX / VFX ]",
+  "  ascii         — print phoenix art",
+  "  banner        — animated wordmark",
+  "  matrix        — toggle matrix rain",
+  "  glitch        — chromatic distortion burst",
+  "  theme [name]  — amber|cyan|magenta|green",
+  "",
+  "[ SYSTEM ]",
+  "  date          — system clock",
+  "  uptime        — session uptime",
+  "  echo [text]   — repeat input",
+  "  joke          — dev humor injection",
+  "  fortune       — random insight",
+  "  hack          — ???",
+  "  sudo [cmd]    — elevate privileges",
+  "  clear         — wipe terminal",
+  "",
+  "  ↹ TAB completes · ↑/↓ scroll history",
+].join("\n");
+
 const RAW_COMMANDS: Record<string, (args: string[], ctx: Ctx) => string> = {
-  help: () => [
-    "available commands:",
-    "  whoami        — bio",
-    "  skills        — tech stack",
-    "  projects      — shipped quests",
-    "  contact       — comms channel",
-    "  resume        — download CV",
-    "  github        — github profile",
-    "  socials       — all links",
-    "  ascii         — print phoenix art",
-    "  matrix        — toggle matrix rain",
-    "  theme [name]  — amber|cyan|magenta",
-    "  date          — system clock",
-    "  echo [text]   — repeat input",
-    "  uptime        — session uptime",
-    "  joke          — dev humor injection",
-    "  fortune       — random insight",
-    "  banner        — animated wordmark",
-    "  hack          — ???",
-    "  clear         — wipe terminal",
-  ].join("\n"),
+  help: () => HELP_TEXT,
+
   whoami: () => "ayush.agnihotri @ thehunter2714\nfull-stack dev · ai enthusiast · kanpur, in\nb.tech cse @ rec pratapgarh (2023-2027) · dob 27.11.05",
   skills: () => "python · javascript · node.js · c · java · ruby\nhtml/css · ai/nlp · cyber sec · networking · ms-office",
   projects: () => [
@@ -84,20 +101,25 @@ const RAW_COMMANDS: Record<string, (args: string[], ctx: Ctx) => string> = {
     return `▸ accent switched → ${name}`;
   },
   matrix: (_a, c) => { c.toggleMatrix(); return "▸ matrix rain — toggled"; },
-  banner: () => "█▀█ █▄█ █▀█ █▀▀ █▄░█ █ ▀▄▀\n█▀▀ ░█░ █▄█ ██▄ █░▀█ █ █░█\n     PHOENIX SHELL · v1.1",
+  glitch: (_a, c) => { c.fireGlitch(); return "▸ chromatic distortion fired — hold steady"; },
+  sudo: (a) => a.length ? `sudo: ${a.join(" ")}: permission denied — nice try, agent.` : "usage: sudo <cmd>",
+  banner: () => "█▀█ █▄█ █▀█ █▀▀ █▄░█ █ ▀▄▀\n█▀▀ ░█░ █▄█ ██▄ █░▀█ █ █░█\n     PHOENIX SHELL · v1.2",
 };
 
-type Ctx = { start: number; setAccent: (c: string) => void; toggleMatrix: () => void };
+type Ctx = { start: number; setAccent: (c: string) => void; toggleMatrix: () => void; fireGlitch: () => void };
+
 
 export function Terminal() {
   const [lines, setLines] = useState<Line[]>([
-    { kind: "sys", text: "PHOENIX-SHELL v1.1 — boot complete. type 'help'." },
+    { kind: "sys", text: "PHOENIX-SHELL v1.2 — boot complete. type `help` for the full codex." },
   ]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [hi, setHi] = useState(-1);
   const [accent, setAccent] = useState("#22d3ee");
   const [matrix, setMatrix] = useState(false);
+  const [glitch, setGlitch] = useState(0);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const start = useRef(Date.now()).current;
@@ -117,7 +139,9 @@ export function Terminal() {
     start,
     setAccent,
     toggleMatrix: () => setMatrix((m) => !m),
+    fireGlitch: () => setGlitch((g) => g + 1),
   };
+
 
   const run = (raw: string) => {
     const trimmed = raw.trim();
@@ -153,6 +177,22 @@ export function Terminal() {
 
           {/* matrix rain overlay */}
           {matrix && <MatrixRain accent={accent} />}
+
+          {/* glitch burst */}
+          {glitch > 0 && (
+            <motion.div
+              key={glitch}
+              aria-hidden
+              initial={{ opacity: 0.9 }}
+              animate={{ opacity: 0, x: [0, -8, 6, -3, 0] }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0 pointer-events-none z-20 mix-blend-screen"
+              style={{
+                background: `repeating-linear-gradient(0deg, ${accent}22 0 2px, transparent 2px 5px), linear-gradient(90deg, #ef444433, transparent, #22d3ee33)`,
+              }}
+            />
+          )}
+
 
           <div className="flex items-center justify-between px-3 py-2 border-b border-primary/30 relative z-10">
             <div className="flex gap-1.5">

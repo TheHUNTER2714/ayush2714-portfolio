@@ -150,10 +150,19 @@ function ConnectionLines({ color }: { color: string }) {
   );
 }
 
+const QUALITIES = {
+  LOW:    { dpr: [1, 1] as [number, number],   stars: 700,  sparkles: 40,  probes: 1, antialias: false },
+  MEDIUM: { dpr: [1, 1.4] as [number, number], stars: 1400, sparkles: 90,  probes: 2, antialias: true },
+  HIGH:   { dpr: [1, 1.8] as [number, number], stars: 2200, sparkles: 160, probes: 3, antialias: true },
+} as const;
+type QualityKey = keyof typeof QUALITIES;
+
 export function World3D() {
   const [themeIdx, setThemeIdx] = useState(0);
   const [pulse, setPulse] = useState(0);
+  const [quality, setQuality] = useState<QualityKey>("MEDIUM");
   const theme = THEMES[themeIdx];
+  const q = QUALITIES[quality];
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
@@ -161,33 +170,33 @@ export function World3D() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-8">
           <div className="font-mono text-xs text-primary mb-2">▸ /worlds/skill-nebula.glb</div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">SKILL <span className="text-accent text-glow-accent">NEBULA</span></h2>
-          <p className="font-mono text-xs text-muted-foreground mt-2">drag to orbit · scroll to zoom · hover a node · cycle themes · pulse to ignite</p>
+          <p className="font-mono text-xs text-muted-foreground mt-2">drag to orbit · scroll to zoom · hover a node · cycle themes · tune quality · pulse to ignite</p>
         </motion.div>
 
         <LaunchGate label="ENTER SKILL NEBULA" hint="▸ tap to boot 3D world · uses GPU" height={600} accent={theme.core}>
           <Canvas
+            key={quality}
             camera={{ position: [0, 0.4, 6.2], fov: 55 }}
-            dpr={[1, 1.6]}
-            gl={{ antialias: true, powerPreference: "high-performance" }}
+            dpr={q.dpr}
+            gl={{ antialias: q.antialias, powerPreference: quality === "LOW" ? "low-power" : "high-performance" }}
           >
             <Suspense fallback={null}>
               <ambientLight intensity={0.4} />
               <pointLight position={[5, 5, 5]} intensity={1.6} color={theme.a} />
               <pointLight position={[-5, -5, -5]} intensity={1.2} color={theme.b} />
               <pointLight position={[0, -4, 4]} intensity={0.8} color={theme.core} />
-              <Stars radius={70} depth={45} count={1800} factor={3.2} fade speed={1} />
-              <Sparkles count={120} scale={8} size={2} speed={0.4} color={theme.core} opacity={0.7} />
+              <Stars radius={70} depth={45} count={q.stars} factor={3.2} fade speed={1} />
+              <Sparkles count={q.sparkles} scale={8} size={2} speed={0.4} color={theme.core} opacity={0.7} />
               <CoreOrb color={theme.core} pulse={pulse} />
               <ConnectionLines color={theme.core} />
               <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
-              <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />
-              <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />
+              {q.probes > 1 && <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />}
+              {q.probes > 2 && <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />}
               {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
               <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
             </Suspense>
           </Canvas>
 
-          {/* Pulse ring overlay (DOM) */}
           {pulse > 0 && (
             <motion.div
               key={pulse}
@@ -200,7 +209,7 @@ export function World3D() {
           )}
 
           <div className="absolute top-3 left-3 font-mono text-[10px] text-primary/80">
-            ⌬ NEBULA.LIVE — 6 NODES · 3 PROBES · THEME {theme.name}
+            ⌬ NEBULA.LIVE — 6 NODES · {q.probes} PROBES · {quality} · THEME {theme.name}
           </div>
 
           <motion.button
@@ -213,6 +222,27 @@ export function World3D() {
             <span className="c-bl" /><span className="c-br" />
             ⚡ FIRE PULSE
           </motion.button>
+
+          {/* QUALITY TOGGLE */}
+          <div className="absolute top-12 right-3 flex gap-1.5">
+            {(Object.keys(QUALITIES) as QualityKey[]).map((k) => (
+              <motion.button
+                key={k}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setQuality(k)}
+                className="px-2 py-1 corner-frame font-mono text-[9px] tracking-widest backdrop-blur-md"
+                style={{
+                  background: k === quality ? `${theme.core}33` : "rgba(0,0,0,0.4)",
+                  color: k === quality ? theme.core : "var(--muted-foreground)",
+                  boxShadow: k === quality ? `0 0 12px ${theme.core}55` : "none",
+                }}
+              >
+                <span className="c-bl" /><span className="c-br" />
+                {k}
+              </motion.button>
+            ))}
+          </div>
 
           <div className="absolute bottom-3 right-3 flex gap-2">
             {THEMES.map((t, i) => (
@@ -235,10 +265,11 @@ export function World3D() {
           </div>
 
           <div className="absolute bottom-3 left-3 font-mono text-[10px] text-muted-foreground">
-            ▸ sparkles · torus knot · 6 nodes · 3 probes
+            ▸ {quality.toLowerCase()} preset · {q.stars} stars · {q.sparkles} sparkles · {q.probes} probes
           </div>
         </LaunchGate>
       </div>
     </section>
   );
 }
+

@@ -25,11 +25,14 @@ function CountUp({ to, className }: { to: number; className?: string }) {
 }
 
 const STORY = [
-  "▸ uplink established",
-  "▸ pulling commit telemetry",
-  "▸ rendering repo constellation",
-  "▸ broadcasting live feed",
+  "▸ uplink established · handshake OK",
+  "▸ pulling commit telemetry from origin/main",
+  "▸ decrypting repo constellation · 6 nodes",
+  "▸ rendering activity heatmap · 365d window",
+  "▸ broadcasting live feed · 0 dropped frames",
+  "▸ signal locked · streaming @ 60fps",
 ];
+
 
 export function GithubStats() {
   const [user, setUser] = useState<User | null>(null);
@@ -65,15 +68,40 @@ export function GithubStats() {
   const langs = Array.from(new Set(repos.map((r) => r.language).filter(Boolean))) as string[];
 
   return (
-    <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
-      <div className="max-w-6xl mx-auto">
+    <section className="min-h-screen px-6 md:px-16 pt-32 pb-32 relative">
+      {/* ambient telemetry grid */}
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.07] pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(oklch(0.82 0.18 195) 1px, transparent 1px), linear-gradient(90deg, oklch(0.82 0.18 195) 1px, transparent 1px)",
+          backgroundSize: "48px 48px",
+          maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
+        }}
+      />
+      <div className="max-w-6xl mx-auto relative">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-6">
-          <div className="font-mono text-xs text-primary mb-2">▸ LIVE_FEED // github.com/{USERNAME}</div>
+          <div className="font-mono text-xs text-primary mb-2 flex items-center gap-2">
+            <motion.span
+              className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--hp)]"
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            />
+            LIVE_FEED // github.com/{USERNAME}
+          </div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">
             REPO <span className="text-accent text-glow-accent">TELEMETRY</span>
           </h2>
+          <motion.div
+            className="mt-2 h-[2px] origin-left"
+            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+            transition={{ duration: 1.2 }}
+            style={{ background: "linear-gradient(90deg, var(--primary), var(--accent), transparent)" }}
+          />
           {/* storytelling ticker */}
-          <div className="mt-3 h-5 overflow-hidden font-mono text-[11px] text-accent/90">
+          <div className="mt-3 h-5 overflow-hidden font-mono text-[11px] text-accent/90 corner-frame bg-card/40 px-3 py-0.5 inline-block">
+            <span className="c-bl" /><span className="c-br" />
             <motion.div animate={{ y: -story * 20 }} transition={{ duration: 0.5, ease: "easeInOut" }}>
               {STORY.concat(STORY[0]).map((s, i) => (
                 <div key={i} className="h-5 leading-5">{s}</div>
@@ -81,6 +109,7 @@ export function GithubStats() {
             </motion.div>
           </div>
         </motion.div>
+
 
         {err && <div className="font-mono text-xs text-[var(--hp)] mb-4">▸ feed error: {err}</div>}
 

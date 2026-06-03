@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Falcon } from "./Falcon";
+import { Logo } from "./Logo";
 import { IntroVideo } from "./IntroVideo";
+
 
 const BIO_LINES = [
   "> booting AYUSH.AGNIHOTRI ...",
@@ -49,16 +50,27 @@ export function Character() {
   const [picked, setPicked] = useState<string | null>(null);
 
   return (
-    <section className="min-h-screen flex items-center px-6 md:px-16 pt-32 pb-32 relative">
-      <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 w-full max-w-6xl mx-auto items-center">
+    <section className="min-h-screen px-6 md:px-16 pt-32 pb-32 relative">
+      <div className="max-w-7xl mx-auto">
+        {/* TOP: Enlarged cinematic intro video */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8 }}
+          className="mb-12"
+        >
+          <IntroVideo />
+        </motion.div>
+
+      <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 items-start">
         {/* LEFT */}
         <div>
           <motion.div
-            initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} className="mb-4"
+            initial={{ opacity: 0, y: 10, scale: 0.7 }} whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true }} transition={{ type: "spring", stiffness: 120, damping: 14 }}
+            className="mb-4"
             data-falcon-origin
           >
-            <Falcon size={120} />
+            <Logo size={130} label={false} intense />
           </motion.div>
 
           <motion.div
@@ -71,29 +83,12 @@ export function Character() {
           <motion.h1
             initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.8 }}
-            className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
+            className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.9] relative"
           >
-            <span
-              className="block"
-              style={{
-                color: "transparent",
-                WebkitTextStroke: "2px oklch(0.82 0.18 195)",
-                textShadow: "0 0 24px oklch(0.82 0.18 195 / 0.4)",
-              }}
-            >
-              AYUSH
-            </span>
-            <span
-              className="block"
-              style={{
-                color: "transparent",
-                WebkitTextStroke: "2px oklch(0.72 0.28 340)",
-                textShadow: "0 0 24px oklch(0.72 0.28 340 / 0.45)",
-              }}
-            >
-              AGNIHOTRI
-            </span>
+            <NameGlyph text="AYUSH" stroke="oklch(0.82 0.18 195)" />
+            <NameGlyph text="AGNIHOTRI" stroke="oklch(0.72 0.28 340)" delay={0.15} />
           </motion.h1>
+
 
           <motion.div
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
@@ -211,7 +206,6 @@ export function Character() {
           viewport={{ once: true }} transition={{ duration: 0.7 }}
           className="space-y-5"
         >
-          <IntroVideo />
           <div className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden">
             <span className="c-bl" /><span className="c-br" />
             <div className="absolute inset-0 pointer-events-none">
@@ -256,7 +250,53 @@ export function Character() {
           </div>
           </div>
         </motion.div>
+
+      </div>
       </div>
     </section>
   );
 }
+
+function NameGlyph({ text, stroke, delay = 0 }: { text: string; stroke: string; delay?: number }) {
+  return (
+    <span className="block relative overflow-hidden">
+      <motion.span
+        className="block"
+        initial={{ y: "110%" }}
+        whileInView={{ y: "0%" }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          color: "transparent",
+          WebkitTextStroke: `2px ${stroke}`,
+          textShadow: `0 0 28px ${stroke}66`,
+        }}
+      >
+        {text}
+      </motion.span>
+      {/* glitch shimmer */}
+      <motion.span
+        aria-hidden
+        className="absolute inset-0 block"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: [0, 0.8, 0], x: [0, 4, -3, 0] }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, delay: delay + 0.4 }}
+        style={{ color: stroke, mixBlendMode: "screen" }}
+      >
+        {text}
+      </motion.span>
+      {/* underline sweep */}
+      <motion.span
+        aria-hidden
+        className="absolute left-0 bottom-1 h-[3px]"
+        initial={{ width: 0 }}
+        whileInView={{ width: "100%" }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.1, delay: delay + 0.5, ease: "easeOut" }}
+        style={{ background: `linear-gradient(90deg, transparent, ${stroke}, transparent)`, boxShadow: `0 0 12px ${stroke}` }}
+      />
+    </span>
+  );
+}
+

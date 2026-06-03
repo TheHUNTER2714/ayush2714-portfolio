@@ -130,22 +130,29 @@ export function Phoenix({ size = 160, intense = false }: { size?: number; intens
           ))}
         </motion.g>
 
-        {/* TORSO — molten body with feather rows */}
+        {/* TORSO — realistic anatomical curve with feather rows */}
         <path
-          d="M60 110 Q120 84 196 92 Q230 96 244 110 Q230 124 196 128 Q120 134 60 110 Z"
+          d="M58 110 Q90 88 132 92 Q176 90 210 96 Q236 100 248 112 Q236 124 210 130 Q176 134 132 130 Q90 130 58 114 Z"
           fill="url(#px-body)" stroke="#fde68a" strokeOpacity="0.55" strokeWidth="0.7"
         />
-        {/* chest scallops */}
+        {/* shoulder mass shadow */}
+        <path d="M126 96 Q150 86 188 92 Q170 110 132 108 Z" fill="#1a0a05" opacity="0.45" />
+        {/* chest scallops — denser feather rows */}
         <g fill="none" stroke="#fde68a" strokeOpacity="0.55" strokeWidth="0.5">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <path key={`s${i}`} d={`M${74 + i * 18} 112 q6 6 12 0`} />
+          ))}
           {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-            <path key={`s${i}`} d={`M${78 + i * 18} 112 q6 6 12 0`} />
+            <path key={`s2${i}`} d={`M${82 + i * 18} 120 q5 5 10 0`} opacity="0.7" />
           ))}
           {[0, 1, 2, 3, 4, 5].map((i) => (
-            <path key={`s2${i}`} d={`M${86 + i * 18} 120 q5 5 10 0`} opacity="0.7" />
+            <path key={`s3${i}`} d={`M${90 + i * 18} 126 q4 4 8 0`} opacity="0.45" />
           ))}
         </g>
-        {/* belly rim */}
-        <path d="M82 122 Q140 132 200 120" stroke="#fbbf24" strokeOpacity="0.7" strokeWidth="0.7" fill="none" />
+        {/* belly rim highlight */}
+        <path d="M82 124 Q140 134 200 122" stroke="#fbbf24" strokeOpacity="0.75" strokeWidth="0.7" fill="none" />
+        <path d="M82 128 Q140 138 200 126" stroke="#7c2d12" strokeOpacity="0.6" strokeWidth="0.5" fill="none" />
+
 
         {/* HEAD */}
         <g>

@@ -85,7 +85,15 @@ export function Quests() {
         >
           <div>
             <div className="font-mono text-xs text-primary mb-2">▸ QUEST_LOG.dat</div>
-            <h2 className="font-display font-black text-4xl md:text-6xl text-glow">SHIPPED <span className="text-accent text-glow-accent">QUESTS</span></h2>
+            <h2 className="font-display font-black text-4xl md:text-6xl text-glow">
+              SHIPPED <span className="text-accent text-glow-accent">QUESTS</span>
+            </h2>
+            <motion.div
+              className="mt-2 h-[2px] origin-left"
+              initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              style={{ background: "linear-gradient(90deg, var(--primary), var(--accent), transparent)" }}
+            />
           </div>
           <div className="font-mono text-xs text-muted-foreground">
             LIVE: <span className="text-primary">6</span> // STACK: <span className="text-accent">FULL</span>
@@ -99,17 +107,41 @@ export function Quests() {
               <motion.a
                 key={q.code}
                 href={q.href} target="_blank" rel="noreferrer"
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 50, rotateX: -12, scale: 0.96 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
                 viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                whileHover={{ y: -6 }}
-                className="corner-frame group relative bg-card backdrop-blur-md p-5 cursor-pointer transition-shadow block"
-                style={{ boxShadow: `0 0 0 1px ${color}33, 0 0 24px -8px ${color}66, inset 0 0 32px -16px ${color}` }}
+                transition={{ duration: 0.7, delay: i * 0.09, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -8, scale: 1.015 }}
+                className="corner-frame group relative bg-card backdrop-blur-md p-5 cursor-pointer transition-shadow block overflow-hidden"
+                style={{ boxShadow: `0 0 0 1px ${color}33, 0 0 28px -8px ${color}66, inset 0 0 36px -16px ${color}` }}
               >
                 <span className="c-bl" /><span className="c-br" />
-                <div className="absolute top-0 left-0 right-0 h-px opacity-60" style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
 
-                <header className="flex items-start justify-between gap-3 mb-3">
+                {/* animated top rim */}
+                <motion.div
+                  className="absolute top-0 left-0 right-0 h-px"
+                  initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }}
+                  transition={{ duration: 1.2, delay: i * 0.09 + 0.2 }}
+                  style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)`, transformOrigin: "left" }}
+                />
+
+                {/* hover sheen sweep */}
+                <motion.span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: `linear-gradient(110deg, transparent 35%, ${color}33 50%, transparent 65%)` }}
+                />
+
+                {/* corner spark */}
+                <motion.span
+                  aria-hidden
+                  className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
+                  style={{ background: color, boxShadow: `0 0 12px ${color}` }}
+                  animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.5, 1] }}
+                  transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.1 }}
+                />
+
+                <header className="flex items-start justify-between gap-3 mb-3 relative">
                   <div>
                     <div className="font-mono text-[10px] tracking-widest" style={{ color }}>{q.type} · {q.code}</div>
                     <h3 className="font-display text-2xl mt-1 group-hover:text-primary transition-colors">{q.title}</h3>
@@ -122,19 +154,44 @@ export function Quests() {
                   </span>
                 </header>
 
-                <p className="text-sm text-foreground/75 leading-relaxed mb-4">{q.desc}</p>
+                <p className="text-sm text-foreground/75 leading-relaxed mb-4 relative">{q.desc}</p>
 
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {q.stack.map((s) => (
-                    <span key={s} className="font-mono text-[10px] px-2 py-0.5 bg-secondary/60 text-foreground/70">{s}</span>
+                <div className="flex flex-wrap gap-1.5 mb-4 relative">
+                  {q.stack.map((s, si) => (
+                    <motion.span
+                      key={s}
+                      initial={{ opacity: 0, y: 6 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+                      transition={{ delay: i * 0.09 + 0.3 + si * 0.05 }}
+                      className="font-mono text-[10px] px-2 py-0.5 bg-secondary/60 text-foreground/70"
+                    >
+                      {s}
+                    </motion.span>
                   ))}
                 </div>
 
-                <footer className="flex items-center justify-between pt-3 border-t border-border/60">
+                {/* XP reward bar */}
+                <div className="mb-3 relative">
+                  <div className="h-1 bg-secondary/60 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }} whileInView={{ width: "100%" }} viewport={{ once: true }}
+                      transition={{ duration: 1.3, delay: i * 0.09 + 0.4, ease: "easeOut" }}
+                      className="h-full"
+                      style={{ background: `linear-gradient(90deg, ${color}, var(--xp))` }}
+                    />
+                  </div>
+                </div>
+
+                <footer className="flex items-center justify-between pt-3 border-t border-border/60 relative">
                   <span className="font-mono text-[10px]">
                     STATUS: <span className="text-primary">{q.status}</span>
                   </span>
-                  <span className="font-mono text-[10px] group-hover:text-primary transition-colors" style={{ color: "var(--xp)" }}>▸ LAUNCH {q.reward}</span>
+                  <motion.span
+                    className="font-mono text-[10px] group-hover:text-primary transition-colors"
+                    style={{ color: "var(--xp)" }}
+                    whileHover={{ x: 4 }}
+                  >
+                    ▸ LAUNCH {q.reward}
+                  </motion.span>
                 </footer>
               </motion.a>
             );
@@ -144,3 +201,4 @@ export function Quests() {
     </section>
   );
 }
+
