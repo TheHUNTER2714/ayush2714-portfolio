@@ -50,16 +50,27 @@ export function Character() {
   const [picked, setPicked] = useState<string | null>(null);
 
   return (
-    <section className="min-h-screen flex items-center px-6 md:px-16 pt-32 pb-32 relative">
-      <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 w-full max-w-6xl mx-auto items-center">
+    <section className="min-h-screen px-6 md:px-16 pt-32 pb-32 relative">
+      <div className="max-w-7xl mx-auto">
+        {/* TOP: Enlarged cinematic intro video */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8 }}
+          className="mb-12"
+        >
+          <IntroVideo />
+        </motion.div>
+
+      <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 items-start">
         {/* LEFT */}
         <div>
           <motion.div
-            initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} className="mb-4"
+            initial={{ opacity: 0, y: 10, scale: 0.7 }} whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true }} transition={{ type: "spring", stiffness: 120, damping: 14 }}
+            className="mb-4"
             data-falcon-origin
           >
-            <Falcon size={120} />
+            <Logo size={130} label={false} intense />
           </motion.div>
 
           <motion.div
@@ -72,29 +83,12 @@ export function Character() {
           <motion.h1
             initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.8 }}
-            className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.9]"
+            className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.9] relative"
           >
-            <span
-              className="block"
-              style={{
-                color: "transparent",
-                WebkitTextStroke: "2px oklch(0.82 0.18 195)",
-                textShadow: "0 0 24px oklch(0.82 0.18 195 / 0.4)",
-              }}
-            >
-              AYUSH
-            </span>
-            <span
-              className="block"
-              style={{
-                color: "transparent",
-                WebkitTextStroke: "2px oklch(0.72 0.28 340)",
-                textShadow: "0 0 24px oklch(0.72 0.28 340 / 0.45)",
-              }}
-            >
-              AGNIHOTRI
-            </span>
+            <NameGlyph text="AYUSH" stroke="oklch(0.82 0.18 195)" />
+            <NameGlyph text="AGNIHOTRI" stroke="oklch(0.72 0.28 340)" delay={0.15} />
           </motion.h1>
+
 
           <motion.div
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
