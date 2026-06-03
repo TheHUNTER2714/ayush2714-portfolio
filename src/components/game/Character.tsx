@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Falcon } from "./Falcon";
+import { Logo } from "./Logo";
 import { IntroVideo } from "./IntroVideo";
+
 
 const BIO_LINES = [
   "> booting AYUSH.AGNIHOTRI ...",
