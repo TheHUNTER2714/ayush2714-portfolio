@@ -101,10 +101,13 @@ const RAW_COMMANDS: Record<string, (args: string[], ctx: Ctx) => string> = {
     return `▸ accent switched → ${name}`;
   },
   matrix: (_a, c) => { c.toggleMatrix(); return "▸ matrix rain — toggled"; },
-  banner: () => "█▀█ █▄█ █▀█ █▀▀ █▄░█ █ ▀▄▀\n█▀▀ ░█░ █▄█ ██▄ █░▀█ █ █░█\n     PHOENIX SHELL · v1.1",
+  glitch: (_a, c) => { c.fireGlitch(); return "▸ chromatic distortion fired — hold steady"; },
+  sudo: (a) => a.length ? `sudo: ${a.join(" ")}: permission denied — nice try, agent.` : "usage: sudo <cmd>",
+  banner: () => "█▀█ █▄█ █▀█ █▀▀ █▄░█ █ ▀▄▀\n█▀▀ ░█░ █▄█ ██▄ █░▀█ █ █░█\n     PHOENIX SHELL · v1.2",
 };
 
-type Ctx = { start: number; setAccent: (c: string) => void; toggleMatrix: () => void };
+type Ctx = { start: number; setAccent: (c: string) => void; toggleMatrix: () => void; fireGlitch: () => void };
+
 
 export function Terminal() {
   const [lines, setLines] = useState<Line[]>([
