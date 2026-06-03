@@ -178,6 +178,22 @@ export function Terminal() {
           {/* matrix rain overlay */}
           {matrix && <MatrixRain accent={accent} />}
 
+          {/* glitch burst */}
+          {glitch > 0 && (
+            <motion.div
+              key={glitch}
+              aria-hidden
+              initial={{ opacity: 0.9 }}
+              animate={{ opacity: 0, x: [0, -8, 6, -3, 0] }}
+              transition={{ duration: 0.8 }}
+              className="absolute inset-0 pointer-events-none z-20 mix-blend-screen"
+              style={{
+                background: `repeating-linear-gradient(0deg, ${accent}22 0 2px, transparent 2px 5px), linear-gradient(90deg, #ef444433, transparent, #22d3ee33)`,
+              }}
+            />
+          )}
+
+
           <div className="flex items-center justify-between px-3 py-2 border-b border-primary/30 relative z-10">
             <div className="flex gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-[var(--hp)]" />
