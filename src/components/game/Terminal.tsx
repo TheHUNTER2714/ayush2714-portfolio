@@ -139,7 +139,9 @@ export function Terminal() {
     start,
     setAccent,
     toggleMatrix: () => setMatrix((m) => !m),
+    fireGlitch: () => setGlitch((g) => g + 1),
   };
+
 
   const run = (raw: string) => {
     const trimmed = raw.trim();
