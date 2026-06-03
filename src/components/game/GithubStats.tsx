@@ -25,11 +25,14 @@ function CountUp({ to, className }: { to: number; className?: string }) {
 }
 
 const STORY = [
-  "▸ uplink established",
-  "▸ pulling commit telemetry",
-  "▸ rendering repo constellation",
-  "▸ broadcasting live feed",
+  "▸ uplink established · handshake OK",
+  "▸ pulling commit telemetry from origin/main",
+  "▸ decrypting repo constellation · 6 nodes",
+  "▸ rendering activity heatmap · 365d window",
+  "▸ broadcasting live feed · 0 dropped frames",
+  "▸ signal locked · streaming @ 60fps",
 ];
+
 
 export function GithubStats() {
   const [user, setUser] = useState<User | null>(null);
