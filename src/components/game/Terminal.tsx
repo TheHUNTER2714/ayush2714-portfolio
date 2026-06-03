@@ -118,6 +118,8 @@ export function Terminal() {
   const [hi, setHi] = useState(-1);
   const [accent, setAccent] = useState("#22d3ee");
   const [matrix, setMatrix] = useState(false);
+  const [glitch, setGlitch] = useState(0);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const start = useRef(Date.now()).current;
