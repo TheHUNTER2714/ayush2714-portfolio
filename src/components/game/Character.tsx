@@ -283,3 +283,186 @@ function NameGlyph({ text, stroke, delay = 0 }: { text: string; stroke: string; 
   );
 }
 
+
+const STATS = [
+  { label: "PYTHON", value: 90, color: "var(--hud)" },
+  { label: "HTML / CSS", value: 92, color: "var(--accent)" },
+  { label: "JAVASCRIPT", value: 85, color: "var(--xp)" },
+  { label: "C", value: 80, color: "var(--mp)" },
+  { label: "NODE.JS", value: 78, color: "var(--hp)" },
+];
+
+function CountUp({ to, duration = 1.4, delay = 0 }: { to: number; duration?: number; delay?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.4 });
+  useEffect(() => {
+    if (!inView || !ref.current) return;
+    const node = ref.current;
+    const controls = animate(0, to, {
+      duration, delay, ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => { node.textContent = Math.round(v).toString(); },
+    });
+    return () => controls.stop();
+  }, [inView, to, duration, delay]);
+  return <span ref={ref}>0</span>;
+}
+
+function StatBar({ s, i }: { s: typeof STATS[number]; i: number }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -16 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: 0.1 + i * 0.08 }}
+      onHoverStart={() => setHover(true)}
+      onHoverEnd={() => setHover(false)}
+      className="relative group cursor-default"
+    >
+      <div className="flex justify-between font-mono text-xs mb-1.5">
+        <span className="text-foreground/80 tracking-wider group-hover:text-primary transition-colors">
+          {s.label}
+        </span>
+        <span style={{ color: s.color, textShadow: `0 0 8px ${s.color}` }}>
+          <CountUp to={s.value} delay={0.25 + i * 0.08} />
+          <span className="opacity-60">%</span>
+        </span>
+      </div>
+      <div className="h-2.5 bg-secondary/60 relative overflow-hidden rounded-sm">
+        <div className="absolute inset-0 opacity-30"
+          style={{ backgroundImage: "repeating-linear-gradient(90deg, transparent 0 9px, oklch(1 0 0 / 0.1) 9px 10px)" }} />
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${s.value}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, delay: 0.25 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+          className="h-full relative"
+          style={{ background: `linear-gradient(90deg, ${s.color}, ${s.color}66)` }}
+        >
+          <motion.span
+            className="absolute inset-y-0 w-12"
+            style={{ background: `linear-gradient(90deg, transparent, ${s.color}, transparent)`, mixBlendMode: "screen" }}
+            animate={{ x: ["-50%", "320%"] }}
+            transition={{ duration: 2.4, repeat: Infinity, ease: "linear", delay: 1 + i * 0.15 }}
+          />
+          <motion.span
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
+            style={{ background: s.color, boxShadow: `0 0 10px ${s.color}` }}
+            animate={{ scale: hover ? [1, 1.6, 1] : [1, 1.25, 1], opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          />
+        </motion.div>
+        <AnimatePresence>
+          {hover && (
+            <motion.span
+              className="absolute inset-0 pointer-events-none rounded-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0.6, 0] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              style={{ boxShadow: `inset 0 0 14px ${s.color}` }}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+function StatMatrix() {
+  return (
+    <div className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden">
+      <span className="c-bl" /><span className="c-br" />
+
+      <div className="absolute inset-0 pointer-events-none opacity-40"
+        style={{
+          backgroundImage:
+            "linear-gradient(oklch(0.82 0.18 195 / 0.07) 1px, transparent 1px), linear-gradient(90deg, oklch(0.82 0.18 195 / 0.07) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
+      <motion.div
+        className="absolute -inset-32 pointer-events-none"
+        style={{
+          background:
+            "conic-gradient(from 0deg, transparent 0deg, oklch(0.82 0.18 195 / 0.18) 30deg, transparent 60deg)",
+        }}
+        animate={{ rotate: 360 }}
+        transition={{ duration: 14, ease: "linear", repeat: Infinity }}
+      />
+      <div className="absolute inset-x-0 h-12 bg-gradient-to-b from-primary/10 to-transparent animate-scan pointer-events-none" />
+
+      <div className="relative">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <motion.span
+              className="inline-block w-2 h-2 rounded-full bg-[var(--xp)]"
+              animate={{ opacity: [0.4, 1, 0.4], scale: [1, 1.35, 1] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+              style={{ boxShadow: "0 0 10px var(--xp)" }}
+            />
+            <h3 className="font-display text-sm tracking-widest text-primary text-glow">STAT MATRIX</h3>
+          </div>
+          <span className="font-mono text-[10px] text-muted-foreground flex items-center gap-1.5">
+            <span className="opacity-60">SYNC</span>
+            <CountUp to={98} duration={1.6} delay={0.4} />
+            <span className="opacity-60">%</span>
+          </span>
+        </div>
+
+        <div className="mb-5 flex items-center gap-4">
+          <div className="relative w-16 h-16">
+            <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
+              <defs>
+                <linearGradient id="sm-grad" x1="0" x2="1">
+                  <stop offset="0" stopColor="oklch(0.82 0.18 195)" />
+                  <stop offset="1" stopColor="oklch(0.78 0.22 340)" />
+                </linearGradient>
+              </defs>
+              <circle cx="32" cy="32" r="26" fill="none" stroke="oklch(1 0 0 / 0.08)" strokeWidth="4" />
+              <motion.circle
+                cx="32" cy="32" r="26" fill="none" stroke="url(#sm-grad)" strokeWidth="4"
+                strokeLinecap="round" pathLength={1}
+                initial={{ pathLength: 0 }} whileInView={{ pathLength: 0.87 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </svg>
+            <div className="absolute inset-0 grid place-items-center font-display text-sm text-primary text-glow">
+              <CountUp to={87} duration={1.6} delay={0.2} />
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="font-mono text-[10px] text-muted-foreground tracking-widest mb-1">OVERALL POWER</div>
+            <div className="font-display text-lg text-foreground">PHOENIX · TIER&nbsp;
+              <span className="text-primary text-glow">S</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-3.5">
+          {STATS.map((s, i) => <StatBar key={s.label} s={s} i={i} />)}
+        </div>
+
+        <div className="mt-6 pt-5 border-t border-border/60 grid grid-cols-3 gap-3 text-center">
+          {[{l:"HP",v:100,c:"var(--hp)"},{l:"MP",v:92,c:"var(--mp)"},{l:"STA",v:96,c:"var(--xp)"}].map((s, i) => (
+            <motion.div
+              key={s.l}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.5 + i * 0.1 }}
+              whileHover={{ y: -3 }}
+              className="relative group"
+            >
+              <div className="font-display text-2xl font-bold" style={{ color: s.c, textShadow: `0 0 14px ${s.c}` }}>
+                <CountUp to={s.v} delay={0.6 + i * 0.1} />
+              </div>
+              <div className="font-mono text-[10px] text-muted-foreground mt-1 tracking-widest">{s.l}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
