@@ -29,21 +29,44 @@ export function SplitDoor({ open }: { open: boolean }) {
             animate={{ scaleY: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.05, ease: "easeOut" }}
           />
-          {/* Centered animated Logo crest riding the seam */}
+          {/* Centered animated Logo crest riding the seam — pulses bright,
+              then flashes & fades the instant the doors split. */}
           <motion.div
-            initial={{ scale: 0.4, opacity: 0, filter: "blur(10px)" }}
-            animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ scale: 0.4, opacity: 0, filter: "blur(14px)" }}
+            animate={{
+              scale: [0.4, 1.08, 1, 1.6],
+              opacity: [0, 1, 1, 0],
+              filter: ["blur(14px)", "blur(0px)", "blur(0px)", "blur(8px)"],
+            }}
+            transition={{
+              duration: 1.5,
+              times: [0, 0.45, 0.78, 1],
+              ease: [0.16, 1, 0.3, 1],
+            }}
             className="relative"
           >
-            <Logo size={180} label={false} intense />
+            <Logo size={200} label={false} intense />
             <motion.div
-              className="absolute inset-0 rounded-full"
-              animate={{ boxShadow: [
-                "0 0 0 0 oklch(0.82 0.18 195 / 0.7)",
-                "0 0 40px 20px oklch(0.82 0.18 195 / 0)",
-              ]}}
-              transition={{ duration: 1.6, repeat: Infinity }}
+              className="absolute inset-0 rounded-full pointer-events-none"
+              animate={{
+                boxShadow: [
+                  "0 0 0 0 oklch(0.82 0.18 195 / 0.85)",
+                  "0 0 60px 28px oklch(0.82 0.18 195 / 0)",
+                ],
+              }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+            />
+            {/* ignition flash right before doors part */}
+            <motion.div
+              aria-hidden
+              className="absolute inset-[-40%] rounded-full pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0, 0.85, 0] }}
+              transition={{ duration: 1.5, times: [0, 0.7, 0.82, 1] }}
+              style={{
+                background:
+                  "radial-gradient(50% 50% at 50% 50%, oklch(0.98 0.18 195 / 0.95), transparent 70%)",
+              }}
             />
           </motion.div>
         </motion.div>

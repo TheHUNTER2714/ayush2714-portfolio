@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, OrbitControls, Stars, Text, Html, Trail, Sparkles } from "@react-three/drei";
-import { useRef, useState, Suspense, useMemo } from "react";
+import { useRef, useState, Suspense, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
 import { LaunchGate } from "./LaunchGate";
@@ -157,12 +157,39 @@ const QUALITIES = {
 } as const;
 type QualityKey = keyof typeof QUALITIES;
 
+const QUALITY_STORAGE_KEY = "world3d:quality";
+const THEME_STORAGE_KEY = "world3d:theme";
+
 export function World3D() {
   const [themeIdx, setThemeIdx] = useState(0);
   const [pulse, setPulse] = useState(0);
   const [quality, setQuality] = useState<QualityKey>("MEDIUM");
   const theme = THEMES[themeIdx];
   const q = QUALITIES[quality];
+
+  // hydrate persisted settings (client-only)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const sq = window.localStorage.getItem(QUALITY_STORAGE_KEY) as QualityKey | null;
+      if (sq && sq in QUALITIES) setQuality(sq);
+      const st = window.localStorage.getItem(THEME_STORAGE_KEY);
+      if (st !== null) {
+        const idx = parseInt(st, 10);
+        if (!Number.isNaN(idx) && idx >= 0 && idx < THEMES.length) setThemeIdx(idx);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try { window.localStorage.setItem(QUALITY_STORAGE_KEY, quality); } catch {}
+  }, [quality]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try { window.localStorage.setItem(THEME_STORAGE_KEY, String(themeIdx)); } catch {}
+  }, [themeIdx]);
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">

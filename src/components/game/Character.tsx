@@ -258,43 +258,68 @@ export function Character() {
 }
 
 function NameGlyph({ text, stroke, delay = 0 }: { text: string; stroke: string; delay?: number }) {
+  // Persist final state: render a solid-fill copy underneath the stroked motion
+  // copy so the name stays unambiguously visible after the reveal finishes.
   return (
-    <span className="block relative overflow-hidden">
+    <span className="block relative">
+      {/* solid-fill anchor — always visible, fades in as slide settles */}
       <motion.span
         className="block"
-        initial={{ y: "110%" }}
-        whileInView={{ y: "0%" }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.6, delay: delay + 0.55, ease: "easeOut" }}
         style={{
-          color: "transparent",
-          WebkitTextStroke: `2px ${stroke}`,
-          textShadow: `0 0 28px ${stroke}66`,
+          color: stroke,
+          textShadow: `0 0 24px ${stroke}55, 0 0 2px ${stroke}`,
         }}
       >
         {text}
       </motion.span>
-      {/* glitch shimmer */}
+
+      {/* stroked overlay slides up from below */}
+      <span className="absolute inset-0 block overflow-hidden">
+        <motion.span
+          className="block"
+          initial={{ y: "110%" }}
+          whileInView={{ y: "0%" }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            color: "transparent",
+            WebkitTextStroke: `2px ${stroke}`,
+            textShadow: `0 0 28px ${stroke}66`,
+          }}
+        >
+          {text}
+        </motion.span>
+      </span>
+
+      {/* glitch shimmer (one-shot) */}
       <motion.span
         aria-hidden
-        className="absolute inset-0 block"
+        className="absolute inset-0 block pointer-events-none"
         initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 0.8, 0], x: [0, 4, -3, 0] }}
-        viewport={{ once: true }}
+        whileInView={{ opacity: [0, 0.7, 0], x: [0, 4, -3, 0] }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.7, delay: delay + 0.4 }}
         style={{ color: stroke, mixBlendMode: "screen" }}
       >
         {text}
       </motion.span>
+
       {/* underline sweep */}
       <motion.span
         aria-hidden
-        className="absolute left-0 bottom-1 h-[3px]"
+        className="absolute left-0 -bottom-0.5 h-[3px] pointer-events-none"
         initial={{ width: 0 }}
         whileInView={{ width: "100%" }}
-        viewport={{ once: true }}
+        viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 1.1, delay: delay + 0.5, ease: "easeOut" }}
-        style={{ background: `linear-gradient(90deg, transparent, ${stroke}, transparent)`, boxShadow: `0 0 12px ${stroke}` }}
+        style={{
+          background: `linear-gradient(90deg, transparent, ${stroke}, transparent)`,
+          boxShadow: `0 0 12px ${stroke}`,
+        }}
       />
     </span>
   );
