@@ -206,49 +206,7 @@ export function Character() {
           viewport={{ once: true }} transition={{ duration: 0.7 }}
           className="space-y-5"
         >
-          <div className="corner-frame box-glow bg-card backdrop-blur-md p-6 relative overflow-hidden">
-            <span className="c-bl" /><span className="c-br" />
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute inset-x-0 h-12 bg-gradient-to-b from-primary/10 to-transparent animate-scan" />
-            </div>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="font-display text-sm tracking-widest text-primary text-glow">STAT MATRIX</h3>
-            <span className="font-mono text-[10px] text-muted-foreground">FALCON · ONLINE</span>
-          </div>
-          <div className="space-y-4">
-            {[
-              { label: "PYTHON", value: 90, color: "var(--hud)" },
-              { label: "HTML / CSS", value: 92, color: "var(--accent)" },
-              { label: "JAVASCRIPT", value: 85, color: "var(--xp)" },
-              { label: "C", value: 80, color: "var(--mp)" },
-              { label: "NODE.JS", value: 78, color: "var(--hp)" },
-            ].map((s, i) => (
-              <div key={s.label}>
-                <div className="flex justify-between font-mono text-xs mb-1.5">
-                  <span className="text-foreground/80">{s.label}</span>
-                  <span style={{ color: s.color }}>{s.value}</span>
-                </div>
-                <div className="h-2 bg-secondary/60 relative overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }} whileInView={{ width: `${s.value}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.2, delay: 0.2 + i * 0.1, ease: "easeOut" }}
-                    className="h-full"
-                    style={{ background: `linear-gradient(90deg, ${s.color}, ${s.color}66)` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 pt-6 border-t border-border grid grid-cols-3 gap-3 text-center">
-            {[{l:"HP",v:"100",c:"var(--hp)"},{l:"MP",v:"92",c:"var(--mp)"},{l:"STA",v:"96",c:"var(--xp)"}].map((s) => (
-              <div key={s.l}>
-                <div className="font-display text-2xl font-bold" style={{ color: s.c, textShadow: `0 0 12px ${s.c}` }}>{s.v}</div>
-                <div className="font-mono text-[10px] text-muted-foreground mt-1">{s.l}</div>
-              </div>
-            ))}
-          </div>
-          </div>
+          <StatMatrix />
         </motion.div>
 
       </div>
