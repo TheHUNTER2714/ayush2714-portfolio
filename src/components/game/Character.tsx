@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence, animate, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { IntroVideo } from "./IntroVideo";
 
