@@ -24,8 +24,8 @@ export function BootScreen({ onDone }: { onDone: () => void }) {
       return () => clearTimeout(t);
     }
     const t1 = setTimeout(() => setExit(true), 500);
-    const t2 = setTimeout(() => setDoorsOpen(true), 900);
-    const t3 = setTimeout(onDone, 2200);
+    const t2 = setTimeout(() => setDoorsOpen(true), 2600);
+    const t3 = setTimeout(onDone, 3900);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [i, onDone]);
 
