@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Falcon } from "./Falcon";
 import { SplitDoor } from "./SplitDoor";
+import { sfx } from "./sfx";
 
 const STEPS = [
   "INIT KERNEL.................OK",
