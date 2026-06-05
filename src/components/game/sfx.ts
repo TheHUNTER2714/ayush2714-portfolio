@@ -61,4 +61,16 @@ export const sfx = {
   lose:    () => { [330, 262, 196, 147].forEach((f, i) => setTimeout(() => tone(f, 0.2, "sawtooth", undefined, 0.4), i * 130)); },
   type:    () => tone(1200 + Math.random() * 400, 0.018, "square", undefined, 0.12),
   ui:      () => tone(720, 0.05, "triangle", 540, 0.25),
+
+  // Phoenix sigil + door split timeline
+  spark:    () => { tone(2200 + Math.random() * 800, 0.04, "triangle", 1400, 0.18); noise(0.05, 0.15); },
+  charge:   () => { tone(180, 1.2, "sawtooth", 880, 0.28); setTimeout(() => tone(360, 1.0, "triangle", 1320, 0.18), 120); },
+  shockwave:() => { tone(80, 0.6, "sine", 30, 0.55); noise(0.35, 0.35); },
+  ignition: () => {
+    noise(0.5, 0.55);
+    tone(140, 0.45, "sawtooth", 1200, 0.55);
+    setTimeout(() => tone(1760, 0.22, "triangle", 2640, 0.4), 60);
+    setTimeout(() => tone(660, 0.5, "square", 110, 0.3), 120);
+  },
+  doorRumble:() => { tone(60, 1.2, "sawtooth", 40, 0.5); noise(1.0, 0.3); },
 };

@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 /**
  * Unique Phoenix-Crest sigil for AYUSH AGNIHOTRI.
@@ -11,13 +12,47 @@ export function Logo({
   size = 120,
   label = true,
   intense = false,
+  reactive = true,
 }: {
   size?: number;
   label?: boolean;
   intense?: boolean;
+  /** Tilt + parallax toward cursor when true (default). Disable for the boot intro. */
+  reactive?: boolean;
 }) {
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 140, damping: 18, mass: 0.5 });
+  const sy = useSpring(my, { stiffness: 140, damping: 18, mass: 0.5 });
+  const rotY = useTransform(sx, [-1, 1], [-18, 18]);
+  const rotX = useTransform(sy, [-1, 1], [14, -14]);
+  const tx = useTransform(sx, [-1, 1], [-6, 6]);
+  const ty = useTransform(sy, [-1, 1], [-6, 6]);
+
+  useEffect(() => {
+    if (!reactive || typeof window === "undefined") return;
+    const onMove = (e: MouseEvent) => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const radius = Math.max(220, r.width * 2);
+      mx.set(Math.max(-1, Math.min(1, (e.clientX - cx) / radius)));
+      my.set(Math.max(-1, Math.min(1, (e.clientY - cy) / radius)));
+    };
+    const onLeave = () => { mx.set(0); my.set(0); };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseleave", onLeave);
+    };
+  }, [reactive, mx, my]);
+
   return (
-    <div className="inline-flex flex-col items-center gap-2 select-none">
+    <div ref={wrapRef} className="inline-flex flex-col items-center gap-2 select-none" style={{ perspective: 600 }}>
       <motion.svg
         width={size}
         height={size}
@@ -26,6 +61,7 @@ export function Logo({
         animate={{ opacity: 1, scale: 1, rotate: 0, filter: "blur(0px)" }}
         transition={{ type: "spring", stiffness: 120, damping: 14 }}
         className="drop-shadow-[0_0_28px_oklch(0.82_0.18_40_/_0.75)]"
+        style={reactive ? { rotateX: rotX, rotateY: rotY, x: tx, y: ty, transformStyle: "preserve-3d" } : undefined}
       >
         <defs>
           <linearGradient id="lg-flame" x1="0" x2="0" y1="0" y2="1">

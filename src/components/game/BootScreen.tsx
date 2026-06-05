@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Falcon } from "./Falcon";
 import { SplitDoor } from "./SplitDoor";
+import { sfx } from "./sfx";
 
 const STEPS = [
   "INIT KERNEL.................OK",
@@ -23,10 +24,21 @@ export function BootScreen({ onDone }: { onDone: () => void }) {
       const t = setTimeout(() => setI((p) => p + 1), 200);
       return () => clearTimeout(t);
     }
+    sfx.resume();
     const t1 = setTimeout(() => setExit(true), 500);
+    // Phoenix sigil reveal SFX timeline (synced to SplitDoor pre-open stage)
+    const sparkTimers = [600, 720, 840, 960, 1100, 1240].map((d) =>
+      setTimeout(() => sfx.spark(), d)
+    );
+    const tCharge = setTimeout(() => sfx.charge(), 800);
+    const tShock = setTimeout(() => sfx.shockwave(), 1900);
+    const tIgnite = setTimeout(() => sfx.ignition(), 2500);
+    const tRumble = setTimeout(() => sfx.doorRumble(), 2620);
     const t2 = setTimeout(() => setDoorsOpen(true), 2600);
     const t3 = setTimeout(onDone, 3900);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    return () => {
+      [t1, tCharge, tShock, tIgnite, tRumble, t2, t3, ...sparkTimers].forEach(clearTimeout);
+    };
   }, [i, onDone]);
 
   return (

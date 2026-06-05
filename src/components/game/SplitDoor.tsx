@@ -97,7 +97,7 @@ export function SplitDoor({ open }: { open: boolean }) {
             }}
             className="relative"
           >
-            <Logo size={220} label={false} intense />
+            <Logo size={220} label={false} intense reactive={false} />
 
             {/* charging halo */}
             <motion.div
