@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 /**
  * Unique Phoenix-Crest sigil for AYUSH AGNIHOTRI.
