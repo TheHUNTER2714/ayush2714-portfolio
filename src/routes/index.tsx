@@ -87,7 +87,7 @@ function Index() {
         {SECTIONS.map((s) => (
           <div key={s.id} id={s.id} ref={(el) => { refs.current[s.id] = el; }}>
             <SectionTransition>
-              {s.id === "character" && <Character />}
+              {s.id === "character" && <Character booted={booted} />}
               {s.id === "quests" && <Quests />}
               {s.id === "skills" && <SkillTree />}
               {s.id === "world" && <World3D />}
