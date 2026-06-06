@@ -162,7 +162,6 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
           src={intro.url}
           playsInline
           preload="auto"
-          muted
           onClick={togglePlay}
           onEnded={() => setEnded(true)}
           className="w-full h-full object-cover cursor-pointer"
