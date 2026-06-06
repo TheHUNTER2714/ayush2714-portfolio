@@ -45,20 +45,20 @@ const LANGS: Lang[] = [
   { name: "HTML/CSS",   color: "var(--accent)", sym: "</>" },
 ];
 
-export function Character() {
+export function Character({ booted = true }: { booted?: boolean } = {}) {
   const lines = useTyping(BIO_LINES);
   const [picked, setPicked] = useState<string | null>(null);
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32 relative">
       <div className="max-w-7xl mx-auto">
-        {/* TOP: Enlarged cinematic intro video */}
+        {/* TOP: Enlarged cinematic intro video — auto-plays once after door split */}
         <motion.div
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }} transition={{ duration: 0.8 }}
           className="mb-12"
         >
-          <IntroVideo />
+          <IntroVideo autoStart={booted} />
         </motion.div>
 
       <div className="grid lg:grid-cols-[1.2fr_1fr] gap-12 items-start">
