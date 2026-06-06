@@ -11,69 +11,70 @@ interface Node {
   projects: { name: string; blurb: string; tech: string[] }[];
 }
 
+// Skill matrix re-calibrated from Ayush Agnihotri's resume.
 const NODES: Node[] = [
-  { id: "n1", label: "PYTHON", x: 50, y: 12, level: 5, max: 5, unlocked: true, branch: "core", connects: ["n2", "n3"],
-    stack: ["FastAPI", "Flask", "Pandas", "NumPy", "scikit-learn"], years: 4, xp: 9200,
-    highlights: ["Shipped 6 ML pipelines", "OWASP-clean APIs", "Async I/O fluency"],
+  { id: "n1", label: "PYTHON", x: 50, y: 10, level: 5, max: 5, unlocked: true, branch: "core", connects: ["n2", "n3", "n7"],
+    stack: ["Flask", "Pdfminer.six", "NLP", "Pandas", "NumPy"], years: 3, xp: 8800,
+    highlights: ["Built NLP pipelines for resume parsing", "Flask + Flask-CORS APIs", "AKTU AI Confluence — 1st place"],
     projects: [
-      { name: "Sentiment Engine", blurb: "Transformer-based review classifier · 92% F1.", tech: ["PyTorch", "HF Transformers", "FastAPI"] },
-      { name: "Recon Toolkit", blurb: "Async port scanner with rate-limited probing.", tech: ["asyncio", "scapy", "rich"] },
+      { name: "Resume Skill Extractor", blurb: "Python/Flask + NLP backend that parses resumes and surfaces skills.", tech: ["Flask", "Pdfminer.six", "NLP"] },
+      { name: "DocAnalyzer", blurb: "AI document analysis — extract, summarize, classify content.", tech: ["NLP", "ML", "Python"] },
     ] },
-  { id: "n2", label: "JAVASCRIPT", x: 25, y: 30, level: 4, max: 5, unlocked: true, branch: "core", connects: ["n4", "n5"],
-    stack: ["ES2024", "TypeScript", "Vite", "Bun"], years: 3, xp: 7800,
-    highlights: ["Strict TS shop", "Edge-runtime aware", "Sub-100ms INP targets"],
+  { id: "n2", label: "JAVASCRIPT", x: 22, y: 28, level: 4, max: 5, unlocked: true, branch: "core", connects: ["n4", "n5"],
+    stack: ["ES2024", "Socket.IO", "Axios", "Framer Motion"], years: 3, xp: 7600,
+    highlights: ["Real-time apps over WebSockets", "Smooth UI choreography", "Open-source JS contributions"],
     projects: [
-      { name: "Portfolio v3", blurb: "This site — TanStack Start + Three.js + GSAP timing.", tech: ["React 19", "TanStack Start", "Three.js", "Framer Motion"] },
-      { name: "Real-time Whiteboard", blurb: "CRDT canvas synced over WebSockets.", tech: ["Yjs", "WebSocket", "Canvas API"] },
+      { name: "ChatCord", blurb: "Real-time rooms, presence, notifications over Socket.IO.", tech: ["Socket.IO", "Express", "JS"] },
+      { name: "Voice Wizard Buddy (Nova AI)", blurb: "Voice assistant with speech recognition and intent handling.", tech: ["Web Speech API", "JS"] },
     ] },
-  { id: "n3", label: "C LANG", x: 75, y: 30, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n6"],
-    stack: ["GCC", "Make", "POSIX", "valgrind"], years: 3, xp: 6400,
-    highlights: ["Manual mem-mgmt", "Bitfield comfort", "Lock-free patterns"],
+  { id: "n3", label: "JAVA", x: 78, y: 28, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n6"],
+    stack: ["OOP", "Collections", "JDBC", "Multithreading"], years: 3, xp: 6800,
+    highlights: ["Strong OOP foundation", "DSA in Java", "Backend service prototypes"],
     projects: [
-      { name: "Mini Shell", blurb: "Pipes, jobs, signals · ~1.4k LOC.", tech: ["POSIX", "readline", "fork/exec"] },
-      { name: "VM Interpreter", blurb: "Stack-based bytecode for a toy language.", tech: ["C99", "Make", "Lex/Yacc"] },
+      { name: "Attendease", blurb: "Smart attendance system — accurate tracking, simple monitoring.", tech: ["Java", "JDBC", "MySQL"] },
+      { name: "Flashmaster", blurb: "Interactive flashcard study platform for quick revision.", tech: ["Java", "OOP"] },
     ] },
-  { id: "n4", label: "HTML / CSS", x: 12, y: 52, level: 5, max: 5, unlocked: true, branch: "design", connects: ["n7"],
-    stack: ["Tailwind v4", "OKLCH", "Container queries", "ViewTransitions"], years: 4, xp: 8800,
-    highlights: ["Awwwards-grade polish", "a11y AA baseline", "Animation-first"],
+  { id: "n4", label: "HTML / CSS", x: 10, y: 50, level: 5, max: 5, unlocked: true, branch: "design", connects: ["n7"],
+    stack: ["Tailwind CSS", "Responsive UI", "Animations", "OKLCH"], years: 4, xp: 8200,
+    highlights: ["UI/UX-first builds", "Responsive across devices", "Animation-led storytelling"],
     projects: [
-      { name: "Cinematic Hero", blurb: "Scroll-driven low-poly Three.js cover.", tech: ["Tailwind", "Three.js", "GSAP"] },
-      { name: "Magnetic Cards", blurb: "Conic gradient borders + magnetic hover.", tech: ["CSS @property", "framer-motion"] },
+      { name: "Vibemeet-Horizon", blurb: "Cinematic landing for a WebRTC video-collab platform.", tech: ["HTML", "CSS", "Tailwind"] },
+      { name: "Resume Builder", blurb: "Live preview resume builder with PDF export.", tech: ["HTML", "CSS", "JS"] },
     ] },
-  { id: "n5", label: "NODE.JS", x: 38, y: 52, level: 4, max: 5, unlocked: true, branch: "core", connects: ["n7"],
-    stack: ["Express", "tRPC", "Prisma", "Socket.IO"], years: 3, xp: 7200,
-    highlights: ["End-to-end typesafe", "RLS-aware queries", "Stream-first IO"],
+  { id: "n5", label: "REACT", x: 38, y: 50, level: 4, max: 5, unlocked: true, branch: "design", connects: ["n7", "n9"],
+    stack: ["React.js", "Tailwind", "Framer Motion", "Axios", "File-Saver"], years: 2, xp: 7400,
+    highlights: ["Animated, accessible UI", "API-driven dashboards", "Component-first architecture"],
     projects: [
-      { name: "API Gateway", blurb: "Edge-cached REST → GraphQL bridge.", tech: ["tRPC", "Redis", "Cloudflare Workers"] },
-      { name: "Chat Server", blurb: "Rooms, presence, typing indicators.", tech: ["Socket.IO", "Redis Pub/Sub"] },
+      { name: "Resume Skill Extractor (UI)", blurb: "React + Framer Motion frontend with file upload + typewriter UX.", tech: ["React", "Tailwind", "Framer Motion"] },
+      { name: "Arcade Portfolio", blurb: "This experience — TanStack Start, Three.js, AI co-pilot.", tech: ["React 19", "TanStack Start", "Three.js"] },
     ] },
-  { id: "n6", label: "NETWORKING", x: 78, y: 52, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n8"],
-    stack: ["TCP/IP", "DNS", "TLS", "Wireshark"], years: 3, xp: 6100,
-    highlights: ["Packet-level debugging", "TLS 1.3 mental model", "DNSSEC literate"],
+  { id: "n6", label: "OPERATING SYS", x: 90, y: 50, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n8"],
+    stack: ["Linux", "Processes", "Scheduling", "Memory"], years: 2, xp: 5800,
+    highlights: ["Comfortable on Linux toolchains", "Process / thread mental model", "Shell-first workflows"],
     projects: [
-      { name: "Latency Heatmap", blurb: "Traceroute → interactive globe vis.", tech: ["mtr", "D3", "WebGL"] },
-      { name: "Packet Sniffer", blurb: "Educational raw-socket capture tool.", tech: ["scapy", "raw sockets"] },
+      { name: "Rainwater Harvesting", blurb: "Smart monitoring + sustainable resource utilization.", tech: ["IoT", "Linux"] },
+      { name: "Shell Utilities", blurb: "Personal CLI helpers for day-to-day dev flow.", tech: ["Bash", "Linux"] },
     ] },
-  { id: "n7", label: "AI / NLP", x: 25, y: 74, level: 4, max: 5, unlocked: true, branch: "design", connects: ["n9"],
-    stack: ["LangChain", "OpenAI", "Gemini", "Pinecone", "HF Transformers"], years: 2, xp: 7400,
-    highlights: ["RAG over 10k+ docs", "Streaming LLM UX", "Eval harness in-house"],
+  { id: "n7", label: "AI / NLP", x: 25, y: 72, level: 4, max: 5, unlocked: true, branch: "design", connects: ["n9"],
+    stack: ["NLP", "ML", "OCI AI", "Resume parsing"], years: 2, xp: 7200,
+    highlights: ["Oracle AI Foundations Certified", "NLP for document understanding", "AKTU AI Hackathon · 1st place"],
     projects: [
-      { name: "Resume Coach", blurb: "LLM critique with RAG over job listings.", tech: ["LangChain", "Pinecone", "OpenAI"] },
-      { name: "Doc-QA Bot", blurb: "PDF embed → semantic search → answer.", tech: ["pdf.js", "Gemini", "pgvector"] },
+      { name: "StudyCare Chatbot", blurb: "Emotional-support + study assistant powered by NLP.", tech: ["Python", "NLP", "AI"] },
+      { name: "Nova AI", blurb: "Voice assistant — speech recognition + intelligent responses.", tech: ["NLP", "Speech API"] },
     ] },
-  { id: "n8", label: "CYBER SEC", x: 78, y: 74, level: 3, max: 5, unlocked: true, branch: "engine", connects: ["n9"],
-    stack: ["Burp Suite", "Nmap", "OWASP Top 10", "Hashcat"], years: 2, xp: 5200,
-    highlights: ["20+ CTF solves", "Auth & session audits", "Threat-model first"],
+  { id: "n8", label: "CLOUD / OCI", x: 75, y: 72, level: 4, max: 5, unlocked: true, branch: "engine", connects: ["n9"],
+    stack: ["Oracle Cloud Infrastructure", "Data Science on OCI", "Deployment"], years: 1, xp: 5400,
+    highlights: ["OCI Data Science Professional", "OCI AI Foundations Associate", "Cloud-native deploys"],
     projects: [
-      { name: "CTF Writeups", blurb: "Web + crypto challenges, 20+ solves.", tech: ["Burp", "CyberChef", "pwntools"] },
-      { name: "Auth Audit", blurb: "Token replay + CSRF lab for an internal app.", tech: ["OWASP ZAP", "JWT", "CSP"] },
+      { name: "OCI Data Science Lab", blurb: "Notebooks + model deployment on Oracle Cloud.", tech: ["OCI", "Python", "ML"] },
+      { name: "Cloud Hosted Portfolios", blurb: "Render / Netlify deploys for live project demos.", tech: ["Render", "Netlify"] },
     ] },
   { id: "n9", label: "FULL-STACK", x: 50, y: 92, level: 5, max: 5, unlocked: true, branch: "core", connects: [],
-    stack: ["React 19", "TanStack Start", "Supabase", "Stripe", "Cloudflare"], years: 3, xp: 9600,
-    highlights: ["Ships solo end-to-end", "RLS + Edge + Auth wiring", "Design-system author"],
+    stack: ["React", "Node.js", "Express", "Socket.IO", "Flask", "Tailwind"], years: 3, xp: 9400,
+    highlights: ["Ships end-to-end solo", "GSSoC Extended contributor", "Hacktoberfest 2025 Super Contributor"],
     projects: [
-      { name: "Arcade Portfolio", blurb: "This experience — terminal, AI co-pilot, 3D world.", tech: ["TanStack Start", "Three.js", "AI SDK", "Framer Motion"] },
-      { name: "SaaS Starter", blurb: "Auth, billing, RLS, edge functions in one repo.", tech: ["Supabase", "Stripe", "Cloudflare Workers"] },
+      { name: "ChatCord (Full-stack)", blurb: "Rooms, presence, real-time notifications — Socket.IO + Express.", tech: ["Node.js", "Socket.IO", "Express"] },
+      { name: "Vibemeet-Horizon", blurb: "WebRTC meeting rooms with live chat and secure rooms.", tech: ["WebRTC", "Node.js", "React"] },
     ] },
 ];
 
@@ -93,7 +94,7 @@ export function SkillTree() {
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
-          <div className="font-mono text-xs text-primary mb-2">▸ SKILL_TREE.bin // ALLOC 9/12 · TAP A NODE</div>
+          <div className="font-mono text-xs text-primary mb-2">▸ SKILL_TREE.bin // ALLOC 9/12 · TAP A NODE · SYNCED W/ RESUME</div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">ABILITY <span className="text-accent text-glow-accent">MATRIX</span></h2>
         </motion.div>
 
