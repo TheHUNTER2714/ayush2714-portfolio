@@ -17,8 +17,9 @@ const ZONES = [
   { id: "github", label: "GITHUB", key: "06" },
   { id: "terminal", label: "SHELL", key: "07" },
   { id: "ai", label: "AI", key: "08" },
-  { id: "arcade", label: "ARCADE", key: "09" },
-  { id: "contact", label: "TRANSMIT", key: "10" },
+ { id: "arcade", label: "ARCADE", key: "09" },
+ { id: "resume", label: "RESUME", key: "10" },
+ { id: "contact", label: "TRANSMIT", key: "11" },
 ];
 
 export function HUD({ level, zone, onNav, active }: HUDProps) {
