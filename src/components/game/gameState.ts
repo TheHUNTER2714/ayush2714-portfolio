@@ -37,5 +37,6 @@ export const SECTION_HUE: Record<string, number> = {
   skills: 160,       // mint
   achievements: 45,  // gold
   arcade: 330,       // magenta
+  resume: 40,        // ember orange
   contact: 220,      // electric blue
 };

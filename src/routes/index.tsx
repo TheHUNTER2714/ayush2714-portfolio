@@ -18,6 +18,7 @@ import { GithubStats } from "@/components/game/GithubStats";
 import { AIAssistant } from "@/components/game/AIAssistant";
 import { World3D } from "@/components/game/World3D";
 import { ScrollFalcon } from "@/components/game/ScrollFalcon";
+import { ResumeDownload } from "@/components/game/ResumeDownload";
 
 
 export const Route = createFileRoute("/")({
@@ -42,7 +43,8 @@ const SECTIONS = [
   { id: "terminal",     label: "/dev/falcon-shell — SECTOR 07" },
   { id: "ai",           label: "FALCON_AI — SECTOR 08" },
   { id: "arcade",       label: "ARCADE — SECTOR 09" },
-  { id: "contact",      label: "SAVE POINT — SECTOR 10" },
+  { id: "resume",       label: "DOSSIER DROP — SECTOR 10" },
+  { id: "contact",      label: "SAVE POINT — SECTOR 11" },
 ];
 
 function Index() {
@@ -96,6 +98,7 @@ function Index() {
               {s.id === "terminal" && <Terminal />}
               {s.id === "ai" && <AIAssistant />}
               {s.id === "arcade" && <MiniGame />}
+              {s.id === "resume" && <ResumeDownload />}
               {s.id === "contact" && <Contact />}
             </SectionTransition>
           </div>
