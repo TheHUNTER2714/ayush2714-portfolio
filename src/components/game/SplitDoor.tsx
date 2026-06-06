@@ -1,14 +1,22 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Logo } from "./Logo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /**
  * Cinematic split-door overlay between BootScreen and the live experience.
- * A multi-stage Phoenix sigil reveal precedes the door split:
- *  1. Sigil materializes from sparks with a shockwave ring
- *  2. Charges up with orbiting plasma + scanning beams
- *  3. Ignition flash → doors split, sigil dissolves into embers
+ * Multi-stage Phoenix sigil reveal precedes the door split:
+ *  1. Sparks converge → sigil materializes
+ *  2. Halo charges, energy arcs orbit
+ *  3. Shockwave + ignition flash → doors split, sigil lingers and fades
  */
 export function SplitDoor({ open }: { open: boolean }) {
+  const isMobile = useIsMobile();
+  const sparkCount = isMobile ? 12 : 18;
+  const sparkRadius = isMobile ? 170 : 260;
+  const emberCount = isMobile ? 16 : 24;
+  const emberDist = isMobile ? 200 : 280;
+  const logoSize = isMobile ? 150 : 220;
+
   return (
     <AnimatePresence>
       {!open ? (
@@ -17,9 +25,8 @@ export function SplitDoor({ open }: { open: boolean }) {
           className="fixed inset-0 z-[111] pointer-events-none grid place-items-center overflow-hidden"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
         >
-          {/* radial vignette pulse */}
           <motion.div
             className="absolute inset-0"
             initial={{ opacity: 0 }}
@@ -31,7 +38,6 @@ export function SplitDoor({ open }: { open: boolean }) {
             }}
           />
 
-          {/* expanding shockwave rings */}
           {[0, 0.35, 0.7].map((delay, i) => (
             <motion.div
               key={i}
@@ -42,23 +48,21 @@ export function SplitDoor({ open }: { open: boolean }) {
                 height: 80,
               }}
               initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: [0, 8], opacity: [0.9, 0] }}
+              animate={{ scale: [0, isMobile ? 6 : 8], opacity: [0.9, 0] }}
               transition={{ duration: 1.8, delay, ease: "easeOut", repeat: Infinity, repeatDelay: 0.4 }}
             />
           ))}
 
-          {/* spark particles converging into sigil */}
-          {Array.from({ length: 18 }).map((_, i) => {
-            const angle = (i / 18) * Math.PI * 2;
-            const r = 260;
+          {Array.from({ length: sparkCount }).map((_, i) => {
+            const angle = (i / sparkCount) * Math.PI * 2;
             return (
               <motion.span
                 key={i}
                 className="absolute w-1 h-1 rounded-full bg-[#fde68a]"
                 style={{ boxShadow: "0 0 8px #fbbf24" }}
                 initial={{
-                  x: Math.cos(angle) * r,
-                  y: Math.sin(angle) * r,
+                  x: Math.cos(angle) * sparkRadius,
+                  y: Math.sin(angle) * sparkRadius,
                   opacity: 0,
                   scale: 0.4,
                 }}
@@ -68,7 +72,6 @@ export function SplitDoor({ open }: { open: boolean }) {
             );
           })}
 
-          {/* laser seam */}
           <motion.div
             className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[2px]"
             style={{
@@ -81,7 +84,7 @@ export function SplitDoor({ open }: { open: boolean }) {
             transition={{ duration: 0.5, delay: 0.6, ease: "easeOut" }}
           />
 
-          {/* Centered animated Logo crest — multi-stage reveal */}
+          {/* Centered animated Logo crest — cinematic intro reveal */}
           <motion.div
             initial={{ scale: 0.2, opacity: 0, filter: "blur(20px)", rotate: -30 }}
             animate={{
@@ -97,9 +100,8 @@ export function SplitDoor({ open }: { open: boolean }) {
             }}
             className="relative"
           >
-            <Logo size={220} label={false} intense reactive={false} />
+            <Logo size={logoSize} label={false} intense reactive={false} />
 
-            {/* charging halo */}
             <motion.div
               className="absolute inset-[-25%] rounded-full pointer-events-none"
               animate={{
@@ -111,7 +113,6 @@ export function SplitDoor({ open }: { open: boolean }) {
               transition={{ duration: 1.4, repeat: Infinity }}
             />
 
-            {/* rotating energy arcs */}
             <motion.div
               className="absolute inset-[-15%] rounded-full pointer-events-none"
               style={{
@@ -124,7 +125,6 @@ export function SplitDoor({ open }: { open: boolean }) {
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
 
-            {/* ignition flash right before doors part */}
             <motion.div
               aria-hidden
               className="absolute inset-[-60%] rounded-full pointer-events-none"
@@ -137,17 +137,16 @@ export function SplitDoor({ open }: { open: boolean }) {
               }}
             />
 
-            {/* sigil callsign appears beneath after reveal */}
             <motion.div
               className="absolute left-1/2 -translate-x-1/2 top-full mt-6 text-center whitespace-nowrap"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: [0, 0, 1, 1, 0], y: [10, 10, 0, 0, -6] }}
               transition={{ duration: 2.4, times: [0, 0.35, 0.5, 0.85, 1] }}
             >
-              <div className="font-display text-[11px] tracking-[0.7em] text-primary text-glow">
+              <div className="font-display text-[10px] md:text-[11px] tracking-[0.5em] md:tracking-[0.7em] text-primary text-glow">
                 PHOENIX · IGNITION
               </div>
-              <div className="font-mono text-[9px] text-accent mt-1 tracking-[0.4em] animate-flicker">
+              <div className="font-mono text-[9px] text-accent mt-1 tracking-[0.3em] md:tracking-[0.4em] animate-flicker">
                 ▸ SIGIL ONLINE — RELEASING DOORS
               </div>
             </motion.div>
@@ -155,12 +154,25 @@ export function SplitDoor({ open }: { open: boolean }) {
         </motion.div>
       ) : null}
 
+      {/* Cinematic logo persists briefly as doors part, then fades */}
+      {open && (
+        <motion.div
+          key="logo-trail"
+          className="fixed inset-0 z-[114] pointer-events-none grid place-items-center"
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 0, scale: 1.8, filter: "blur(14px)" }}
+          transition={{ duration: 1.1, ease: [0.4, 0, 0.2, 1] }}
+        >
+          <Logo size={logoSize} label={false} intense reactive={false} />
+        </motion.div>
+      )}
+
       <motion.div
         key="left"
         className="fixed top-0 bottom-0 left-0 z-[112] w-1/2 origin-left"
         initial={{ x: 0 }}
         animate={{ x: open ? "-105%" : 0 }}
-        transition={{ duration: 1.1, ease: [0.7, 0.0, 0.2, 1], delay: open ? 0.1 : 0 }}
+        transition={{ duration: 1.2, ease: [0.65, 0.0, 0.2, 1], delay: open ? 0.15 : 0 }}
         style={{
           background: "linear-gradient(110deg, #050709 0%, #0b1220 40%, #0a0f1a 100%)",
           boxShadow: "inset -24px 0 80px oklch(0.82 0.18 195 / 0.18)",
@@ -173,7 +185,7 @@ export function SplitDoor({ open }: { open: boolean }) {
         className="fixed top-0 bottom-0 right-0 z-[112] w-1/2 origin-right"
         initial={{ x: 0 }}
         animate={{ x: open ? "105%" : 0 }}
-        transition={{ duration: 1.1, ease: [0.7, 0.0, 0.2, 1], delay: open ? 0.1 : 0 }}
+        transition={{ duration: 1.2, ease: [0.65, 0.0, 0.2, 1], delay: open ? 0.15 : 0 }}
         style={{
           background: "linear-gradient(250deg, #050709 0%, #0b1220 40%, #0a0f1a 100%)",
           boxShadow: "inset 24px 0 80px oklch(0.72 0.28 330 / 0.18)",
@@ -196,11 +208,10 @@ export function SplitDoor({ open }: { open: boolean }) {
         />
       )}
 
-      {/* ember burst as doors part */}
       {open &&
-        Array.from({ length: 24 }).map((_, i) => {
-          const angle = (i / 24) * Math.PI * 2;
-          const dist = 280 + Math.random() * 180;
+        Array.from({ length: emberCount }).map((_, i) => {
+          const angle = (i / emberCount) * Math.PI * 2;
+          const dist = emberDist + Math.random() * 180;
           return (
             <motion.span
               key={`ember-${i}`}
