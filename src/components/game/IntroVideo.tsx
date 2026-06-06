@@ -22,11 +22,11 @@ const CAPTIONS: Cue[] = [
   { from: 13.0, to: 99.0, text: "▸ Signal stable. Welcome to the grid." },
 ];
 
-export function IntroVideo() {
+export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) {
   const ref = useRef<HTMLVideoElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [played, setPlayed] = useState(false);
-  const [muted, setMuted] = useState(true);          // ← default MUTED
+  const [muted, setMuted] = useState(false);
   const [ended, setEnded] = useState(false);
   const [progress, setProgress] = useState(0);
   const [time, setTime] = useState(0);
@@ -35,14 +35,23 @@ export function IntroVideo() {
   const [paused, setPaused] = useState(false);
   const [showCC, setShowCC] = useState(true);
 
-  // Autoplay muted (allowed by all browsers).
+  // Cinematic auto-start: after the blast doors open, play ONCE from the top.
+  // Try with audio first; if the browser blocks unmuted autoplay, fall back
+  // to muted playback + the visible "TAP FOR AUDIO" nudge.
   useEffect(() => {
     const v = ref.current;
-    if (!v || played) return;
-    v.muted = true;
+    if (!v || !autoStart || played) return;
+    v.currentTime = 0;
     v.volume = volume;
-    v.play().then(() => setPlayed(true)).catch(() => {});
-  }, [played, volume]);
+    v.muted = false;
+    v.play()
+      .then(() => { setMuted(false); setPlayed(true); })
+      .catch(() => {
+        v.muted = true;
+        setMuted(true);
+        v.play().then(() => setPlayed(true)).catch(() => {});
+      });
+  }, [autoStart, played, volume]);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -153,7 +162,6 @@ export function IntroVideo() {
           src={intro.url}
           playsInline
           preload="auto"
-          muted
           onClick={togglePlay}
           onEnded={() => setEnded(true)}
           className="w-full h-full object-cover cursor-pointer"
@@ -294,7 +302,7 @@ export function IntroVideo() {
           />
         </div>
 
-        <div className="flex items-center gap-3 font-mono text-[10px]">
+        <div className="flex items-center gap-x-3 gap-y-1.5 flex-wrap font-mono text-[10px]">
           <button onClick={togglePlay} className="text-primary hover:text-accent transition-colors">
             {paused ? "▶ PLAY" : "❚❚ PAUSE"}
           </button>
