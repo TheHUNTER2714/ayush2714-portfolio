@@ -26,16 +26,31 @@ export function BootScreen({ onDone }: { onDone: () => void }) {
     }
     sfx.resume();
     const t1 = setTimeout(() => setExit(true), 500);
-    // Phoenix sigil reveal SFX timeline (synced to SplitDoor pre-open stage)
-    const sparkTimers = [600, 720, 840, 960, 1100, 1240].map((d) =>
-      setTimeout(() => sfx.spark(), d)
+
+    // ── Phoenix sigil → door split SFX timeline ──
+    // SplitDoor reveal animates over ~2.4s (times: 0, 0.3, 0.55, 0.85, 1)
+    // setDoorsOpen fires at 2600ms (animation start ≈ 500ms).
+    // So sigil internal time 0 ≈ 500ms wall time. Map sigil events accordingly.
+    //
+    //   sigil 0.00 → 500ms : converge sparks start
+    //   sigil 0.30 → 1220ms: sigil locks (peak scale)
+    //   sigil 0.55 → 1820ms: arcs rotating, halo charging
+    //   sigil 0.85 → 2540ms: ignition flash
+    //   sigil 1.00 → 2900ms: doors fully part
+    //
+    // Spark converge: 6 sparks spaced 80ms, alternating L/R panning.
+    const sparkSchedule = [600, 700, 800, 900, 1020, 1150];
+    const sparkTimers = sparkSchedule.map((d, idx) =>
+      setTimeout(() => sfx.spark(idx % 2 === 0 ? -0.7 : 0.7), d),
     );
-    const tCharge = setTimeout(() => sfx.charge(), 800);
-    const tShock = setTimeout(() => sfx.shockwave(), 1900);
-    const tIgnite = setTimeout(() => sfx.ignition(), 2500);
-    const tRumble = setTimeout(() => sfx.doorRumble(), 2620);
+
+    const tCharge = setTimeout(() => sfx.charge(), 900);          // halo begins
+    const tShock  = setTimeout(() => sfx.shockwave(), 1820);      // shockwave ring
+    const tIgnite = setTimeout(() => sfx.ignition(), 2520);       // ignition flash
+    const tRumble = setTimeout(() => sfx.doorRumble(), 2580);     // doors release
     const t2 = setTimeout(() => setDoorsOpen(true), 2600);
-    const t3 = setTimeout(onDone, 3900);
+    const t3 = setTimeout(onDone, 4100);
+
     return () => {
       [t1, tCharge, tShock, tIgnite, tRumble, t2, t3, ...sparkTimers].forEach(clearTimeout);
     };
