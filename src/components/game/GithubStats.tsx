@@ -1,5 +1,6 @@
 import { motion, animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { ContribSnake } from "./ContribSnake";
 
 type User = {
   avatar_url: string; name: string | null; bio: string | null;
@@ -160,6 +161,22 @@ export function GithubStats() {
             ))}
           </motion.div>
         )}
+
+        {/* Snake contribution feed */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="corner-frame bg-card/85 backdrop-blur p-4 md:p-5 mb-6 relative overflow-hidden"
+        >
+          <span className="c-bl" /><span className="c-br" />
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div className="font-mono text-[11px] text-accent tracking-widest">▸ CONTRIB.snake // 26-WEEK SERPENT</div>
+            <div className="font-mono text-[10px] text-muted-foreground">
+              auto-pilot · feeds on commits
+            </div>
+          </div>
+          <ContribSnake weeks={26} />
+        </motion.div>
 
         <div className="grid lg:grid-cols-[300px_1fr] gap-6">
           {/* Profile card */}
