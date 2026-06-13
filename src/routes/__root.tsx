@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Hunter2714-Portfolio" },
+      { name: "description", content: "An interactive 3D portfolio that immerses visitors in a video game-like experience to showcase achievements and skills." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Hunter2714-Portfolio" },
+      { property: "og:description", content: "An interactive 3D portfolio that immerses visitors in a video game-like experience to showcase achievements and skills." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Hunter2714-Portfolio" },
+      { name: "twitter:description", content: "An interactive 3D portfolio that immerses visitors in a video game-like experience to showcase achievements and skills." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/004780ea-5c08-4a0e-9d7a-1f2486006455/id-preview-81fef711--68da5b4a-5b59-41c1-ae69-9fd955b99af0.lovable.app-1780753813326.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/004780ea-5c08-4a0e-9d7a-1f2486006455/id-preview-81fef711--68da5b4a-5b59-41c1-ae69-9fd955b99af0.lovable.app-1780753813326.png" },
     ],
     links: [
       {
