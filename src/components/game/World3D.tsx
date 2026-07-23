@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, OrbitControls, Stars, Text, Html, Trail, Sparkles } from "@react-three/drei";
 import { useRef, useState, Suspense, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -29,7 +29,7 @@ const THEMES = [
   { name: "MATRIX", core: "#34d399", a: "#22d3ee", b: "#a78bfa" },
 ];
 
-function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }) {
+function SkillNode({ node, theme, focused, onFocus }: { node: Node; theme: typeof THEMES[number]; focused: boolean; onFocus: () => void }) {
   const ref = useRef<THREE.Mesh>(null);
   const [hover, setHover] = useState(false);
 
@@ -37,7 +37,7 @@ function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }
     if (!ref.current) return;
     ref.current.rotation.x = clock.elapsedTime * 0.6;
     ref.current.rotation.y = clock.elapsedTime * 0.4;
-    const target = hover ? 0.62 : 0.42;
+    const target = focused ? 0.78 : hover ? 0.62 : 0.42;
     ref.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15);
   });
 
@@ -48,12 +48,13 @@ function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }
           ref={ref}
           onPointerOver={(e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = "pointer"; }}
           onPointerOut={() => { setHover(false); document.body.style.cursor = "default"; }}
+          onClick={(e) => { e.stopPropagation(); onFocus(); }}
         >
           <octahedronGeometry args={[1, 0]} />
           <meshStandardMaterial
             color={node.color}
             emissive={node.color}
-            emissiveIntensity={hover ? 1.6 : 0.7}
+            emissiveIntensity={focused ? 2.2 : hover ? 1.6 : 0.7}
             wireframe
           />
         </mesh>
@@ -160,12 +161,27 @@ type QualityKey = keyof typeof QUALITIES;
 const QUALITY_STORAGE_KEY = "world3d:quality";
 const THEME_STORAGE_KEY = "world3d:theme";
 
+function CameraRig({ target }: { target: [number, number, number] | null }) {
+  const { camera } = useThree();
+  const tgt = useRef(new THREE.Vector3());
+  useFrame(() => {
+    if (!target) return;
+    tgt.current.set(target[0] * 1.6, target[1] * 1.6 + 0.4, target[2] * 1.6 + 3.2);
+    camera.position.lerp(tgt.current, 0.05);
+    camera.lookAt(target[0], target[1], target[2]);
+  });
+  return null;
+}
+
 export function World3D() {
   const [themeIdx, setThemeIdx] = useState(0);
   const [pulse, setPulse] = useState(0);
   const [quality, setQuality] = useState<QualityKey>("MEDIUM");
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [focused, setFocused] = useState<string | null>(null);
   const theme = THEMES[themeIdx];
   const q = QUALITIES[quality];
+  const focusNode = focused ? NODES.find((n) => n.label === focused) ?? null : null;
 
   // hydrate persisted settings (client-only)
   useEffect(() => {
@@ -220,8 +236,18 @@ export function World3D() {
               <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
               {q.probes > 1 && <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />}
               {q.probes > 2 && <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />}
-              {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
-              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
+              {NODES.map((n) => (
+                <SkillNode
+                  key={n.label}
+                  node={n}
+                  theme={theme}
+                  focused={focused === n.label}
+                  onFocus={() => { setFocused((f) => (f === n.label ? null : n.label)); setAutoRotate(false); }}
+                />
+              ))}
+              {focusNode && <CameraRig target={focusNode.pos} />}
+              <OrbitControls enablePan={false} autoRotate={autoRotate && !focused} autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
+
             </Suspense>
           </Canvas>
 
@@ -238,7 +264,38 @@ export function World3D() {
 
           <div className="absolute top-3 left-3 font-mono text-[10px] text-primary/80">
             ⌬ NEBULA.LIVE — 6 NODES · {q.probes} PROBES · {quality} · THEME {theme.name}
+            {focused && <> · <span style={{ color: theme.core }}>◎ FOCUS: {focused}</span></>}
           </div>
+
+          {/* auto-rotate + reset (top-left row 2) */}
+          <div className="absolute top-9 left-3 flex gap-1.5">
+            <motion.button
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.93 }}
+              onClick={() => setAutoRotate((a) => !a)}
+              className="corner-frame px-2 py-1 font-mono text-[9px] tracking-widest backdrop-blur-md"
+              style={{
+                background: autoRotate ? `${theme.core}22` : "rgba(0,0,0,0.4)",
+                color: autoRotate ? theme.core : "var(--muted-foreground)",
+                boxShadow: autoRotate ? `0 0 12px ${theme.core}55` : "none",
+              }}
+            >
+              <span className="c-bl" /><span className="c-br" />
+              {autoRotate ? "◐ AUTO-ORBIT" : "◑ MANUAL"}
+            </motion.button>
+            {focused && (
+              <motion.button
+                initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.93 }}
+                onClick={() => { setFocused(null); setAutoRotate(true); }}
+                className="corner-frame px-2 py-1 font-mono text-[9px] tracking-widest backdrop-blur-md"
+                style={{ background: "rgba(0,0,0,0.4)", color: theme.a, boxShadow: `0 0 10px ${theme.a}55` }}
+              >
+                <span className="c-bl" /><span className="c-br" />
+                ⤺ RESET
+              </motion.button>
+            )}
+          </div>
+
 
           <motion.button
             whileHover={{ scale: 1.05 }}
