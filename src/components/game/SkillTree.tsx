@@ -268,25 +268,72 @@ export function SkillTree() {
                 <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px]" style={{ color }}>
+                      {String(NODES.findIndex((n) => n.id === node.id) + 1).padStart(2, "0")}
+                    </span>
                     <span className="w-2 h-2" style={{ background: color }} />
                     <h4 className="font-display text-xs tracking-widest" style={{ color }}>{node.label}</h4>
                   </div>
                   <span className="font-mono text-[10px]" style={{ color }}>LV {node.level}/{node.max}</span>
                 </div>
+
+                {/* Level pips */}
+                <div className="flex gap-1 mb-2">
+                  {Array.from({ length: node.max }).map((_, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.05 * i, type: "spring", stiffness: 260 }}
+                      className="flex-1 h-1.5"
+                      style={{
+                        background: i < node.level ? color : `${color}22`,
+                        boxShadow: i < node.level ? `0 0 8px ${color}` : "none",
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/* XP progress bar */}
+                <div className="mb-3">
+                  <div className="flex justify-between font-mono text-[9px] text-muted-foreground tracking-widest mb-1">
+                    <span>XP</span>
+                    <span style={{ color }}><CountUp value={node.xp} /> / 10,000</span>
+                  </div>
+                  <div className="h-1.5 border relative overflow-hidden" style={{ borderColor: `${color}44` }}>
+                    <motion.div
+                      key={node.id + "-xp"}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(100, (node.xp / 10000) * 100)}%` }}
+                      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                      className="h-full relative"
+                      style={{ background: `linear-gradient(90deg, ${color}66, ${color})` }}
+                    >
+                      <motion.div
+                        className="absolute inset-y-0 w-6"
+                        style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)`, filter: "blur(2px)" }}
+                        animate={{ x: ["-100%", "400%"] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
-                    <div className="font-display text-base" style={{ color }}>{node.years}y</div>
+                    <div className="font-display text-base" style={{ color }}><CountUp value={node.years} suffix="y" /></div>
                     <div className="font-mono text-[8px] text-muted-foreground tracking-widest">EXP</div>
                   </div>
                   <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
-                    <div className="font-display text-base" style={{ color }}>{node.xp.toLocaleString()}</div>
+                    <div className="font-display text-base" style={{ color }}><CountUp value={node.xp} /></div>
                     <div className="font-mono text-[8px] text-muted-foreground tracking-widest">XP</div>
                   </div>
                   <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
-                    <div className="font-display text-base" style={{ color }}>{node.projects.length}</div>
+                    <div className="font-display text-base" style={{ color }}><CountUp value={node.projects.length} /></div>
                     <div className="font-mono text-[8px] text-muted-foreground tracking-widest">SHIPPED</div>
                   </div>
                 </div>
+
                 <div className="font-mono text-[10px] text-muted-foreground mb-1 tracking-widest">▸ HIGHLIGHTS</div>
                 <ul className="mb-3 space-y-0.5">
                   {node.highlights.map((h) => (
