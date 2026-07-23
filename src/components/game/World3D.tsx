@@ -264,7 +264,38 @@ export function World3D() {
 
           <div className="absolute top-3 left-3 font-mono text-[10px] text-primary/80">
             ⌬ NEBULA.LIVE — 6 NODES · {q.probes} PROBES · {quality} · THEME {theme.name}
+            {focused && <> · <span style={{ color: theme.core }}>◎ FOCUS: {focused}</span></>}
           </div>
+
+          {/* auto-rotate + reset (top-left row 2) */}
+          <div className="absolute top-9 left-3 flex gap-1.5">
+            <motion.button
+              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.93 }}
+              onClick={() => setAutoRotate((a) => !a)}
+              className="corner-frame px-2 py-1 font-mono text-[9px] tracking-widest backdrop-blur-md"
+              style={{
+                background: autoRotate ? `${theme.core}22` : "rgba(0,0,0,0.4)",
+                color: autoRotate ? theme.core : "var(--muted-foreground)",
+                boxShadow: autoRotate ? `0 0 12px ${theme.core}55` : "none",
+              }}
+            >
+              <span className="c-bl" /><span className="c-br" />
+              {autoRotate ? "◐ AUTO-ORBIT" : "◑ MANUAL"}
+            </motion.button>
+            {focused && (
+              <motion.button
+                initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.93 }}
+                onClick={() => { setFocused(null); setAutoRotate(true); }}
+                className="corner-frame px-2 py-1 font-mono text-[9px] tracking-widest backdrop-blur-md"
+                style={{ background: "rgba(0,0,0,0.4)", color: theme.a, boxShadow: `0 0 10px ${theme.a}55` }}
+              >
+                <span className="c-bl" /><span className="c-br" />
+                ⤺ RESET
+              </motion.button>
+            )}
+          </div>
+
 
           <motion.button
             whileHover={{ scale: 1.05 }}
