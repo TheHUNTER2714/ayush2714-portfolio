@@ -1,5 +1,15 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
+
+function CountUp({ value, className, suffix = "" }: { value: number; className?: string; suffix?: string }) {
+  const mv = useMotionValue(0);
+  const rounded = useTransform(mv, (v) => Math.round(v).toLocaleString() + suffix);
+  useEffect(() => {
+    const controls = animate(mv, value, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+    return () => controls.stop();
+  }, [value, mv]);
+  return <motion.span className={className}>{rounded}</motion.span>;
+}
 
 interface Node {
   id: string; label: string; x: number; y: number; level: number; max: number; unlocked: boolean; branch: "core" | "design" | "engine";
