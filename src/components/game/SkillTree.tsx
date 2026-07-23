@@ -1,15 +1,5 @@
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
-
-function CountUp({ value, className, suffix = "" }: { value: number; className?: string; suffix?: string }) {
-  const mv = useMotionValue(0);
-  const rounded = useTransform(mv, (v) => Math.round(v).toLocaleString() + suffix);
-  useEffect(() => {
-    const controls = animate(mv, value, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
-    return () => controls.stop();
-  }, [value, mv]);
-  return <motion.span className={className}>{rounded}</motion.span>;
-}
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 interface Node {
   id: string; label: string; x: number; y: number; level: number; max: number; unlocked: boolean; branch: "core" | "design" | "engine";
@@ -97,76 +87,16 @@ const BRANCH_COLOR: Record<string, string> = {
 export function SkillTree() {
   const [hover, setHover] = useState<string | null>(null);
   const [picked, setPicked] = useState<string>("n1");
-  const [filter, setFilter] = useState<"all" | "core" | "design" | "engine">("all");
   const node = NODES.find((n) => n.id === picked)!;
   const color = BRANCH_COLOR[node.branch];
-
-  const totals = useMemo(() => {
-    const xp = NODES.reduce((s, n) => s + n.xp, 0);
-    const lvl = NODES.reduce((s, n) => s + n.level, 0);
-    const max = NODES.reduce((s, n) => s + n.max, 0);
-    return { xp, avgLvl: (lvl / NODES.length).toFixed(1), pct: Math.round((lvl / max) * 100), shipped: NODES.reduce((s, n) => s + n.projects.length, 0) };
-  }, []);
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
       <div className="max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
           <div className="font-mono text-xs text-primary mb-2">▸ SKILL_TREE.bin // ALLOC {NODES.length}/{NODES.length} · TAP A NODE · SYNCED W/ RESUME</div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">ABILITY <span className="text-accent text-glow-accent">MATRIX</span></h2>
         </motion.div>
-
-        {/* Totals + branch filter */}
-        <div className="grid md:grid-cols-[1fr_auto] gap-4 mb-6">
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              { k: "NODES", v: NODES.length, s: "" },
-              { k: "AVG LV", v: parseFloat(totals.avgLvl), s: "" },
-              { k: "TOTAL XP", v: totals.xp, s: "" },
-              { k: "MASTERY", v: totals.pct, s: "%" },
-            ].map((t, i) => (
-              <motion.div
-                key={t.k}
-                initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                className="corner-frame bg-card/60 backdrop-blur-md p-2.5 relative overflow-hidden"
-              >
-                <span className="c-bl" /><span className="c-br" />
-                <div className="font-mono text-[9px] text-muted-foreground tracking-widest">{t.k}</div>
-                <div className="font-display text-xl text-primary text-glow"><CountUp value={t.v} suffix={t.s} /></div>
-                <motion.div
-                  className="absolute inset-x-0 bottom-0 h-px"
-                  style={{ background: "linear-gradient(90deg, transparent, var(--hud), transparent)" }}
-                  animate={{ x: ["-100%", "100%"] }}
-                  transition={{ duration: 2.4, repeat: Infinity, ease: "linear", delay: i * 0.2 }}
-                />
-              </motion.div>
-            ))}
-          </div>
-          <div className="flex gap-1.5 items-center">
-            {(["all", "core", "design", "engine"] as const).map((b) => {
-              const active = filter === b;
-              const bcolor = b === "all" ? "var(--hud)" : BRANCH_COLOR[b];
-              return (
-                <motion.button
-                  key={b}
-                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.94 }}
-                  onClick={() => setFilter(b)}
-                  className="px-2.5 py-1.5 corner-frame font-mono text-[10px] tracking-widest backdrop-blur-md relative"
-                  style={{
-                    background: active ? `color-mix(in oklab, ${bcolor} 18%, transparent)` : "rgba(0,0,0,0.35)",
-                    color: bcolor,
-                    boxShadow: active ? `0 0 14px color-mix(in oklab, ${bcolor} 55%, transparent)` : "none",
-                  }}
-                >
-                  <span className="c-bl" /><span className="c-br" />
-                  {b.toUpperCase()}
-                </motion.button>
-              );
-            })}
-          </div>
-        </div>
-
 
         <div className="grid lg:grid-cols-[1fr_320px] gap-6">
           <div className="relative corner-frame box-glow bg-card backdrop-blur-md aspect-[4/5] md:aspect-[5/4] overflow-hidden">
@@ -179,14 +109,12 @@ export function SkillTree() {
                 n.connects.map((cid) => {
                   const c = NODES.find((x) => x.id === cid)!;
                   const active = hover === n.id || hover === cid || picked === n.id || picked === cid;
-                  const dim = filter !== "all" && n.branch !== filter && c.branch !== filter;
                   return (
                     <line
                       key={`${n.id}-${cid}`} x1={n.x} y1={n.y} x2={c.x} y2={c.y}
                       stroke={active ? "var(--hud)" : "oklch(0.82 0.18 195 / 0.35)"}
                       strokeWidth={active ? "0.5" : "0.2"}
                       strokeDasharray="1.5 1"
-                      opacity={dim ? 0.12 : 1}
                     >
                       <animate attributeName="stroke-dashoffset" from="0" to="-10" dur="3s" repeatCount="indefinite" />
                     </line>
@@ -199,7 +127,6 @@ export function SkillTree() {
               const ncolor = BRANCH_COLOR[n.branch];
               const isHover = hover === n.id;
               const isPicked = picked === n.id;
-              const dim = filter !== "all" && n.branch !== filter;
               return (
                 <motion.button
                   key={n.id}
@@ -208,21 +135,9 @@ export function SkillTree() {
                   initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.06, type: "spring" }}
                   whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.92 }}
-                  animate={{ opacity: dim ? 0.28 : 1 }}
                   className="absolute -translate-x-1/2 -translate-y-1/2 group"
                   style={{ left: `${n.x}%`, top: `${n.y}%` }}
-                  aria-label={`${String(i + 1).padStart(2, "0")} ${n.label} level ${n.level} of ${n.max}`}
                 >
-                  {/* orbit ring for picked */}
-                  {isPicked && (
-                    <motion.span
-                      aria-hidden
-                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
-                      style={{ borderColor: ncolor, width: 72, height: 72, boxShadow: `0 0 24px ${ncolor}` }}
-                      animate={{ rotate: 360, scale: [1, 1.08, 1] }}
-                      transition={{ rotate: { duration: 8, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity } }}
-                    />
-                  )}
                   <motion.div
                     animate={isPicked ? { boxShadow: [`0 0 12px ${ncolor}`, `0 0 32px ${ncolor}`, `0 0 12px ${ncolor}`] } : {}}
                     transition={{ duration: 1.6, repeat: Infinity }}
@@ -244,13 +159,12 @@ export function SkillTree() {
                     </span>
                   </motion.div>
                   <div className={`absolute left-1/2 -translate-x-1/2 top-full mt-1 whitespace-nowrap font-mono text-[10px] transition-opacity ${isHover || isPicked ? "opacity-100" : "opacity-60"}`} style={{ color: ncolor }}>
-                    {String(i + 1).padStart(2, "0")} · {n.label} · LV{n.level}/{n.max}
+                    {n.label} · LV{n.level}/{n.max}
                   </div>
                 </motion.button>
               );
             })}
           </div>
-
 
           {/* Side panel: inspector */}
           <div className="space-y-4">
@@ -268,72 +182,25 @@ export function SkillTree() {
                 <div className="absolute inset-x-0 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10px]" style={{ color }}>
-                      {String(NODES.findIndex((n) => n.id === node.id) + 1).padStart(2, "0")}
-                    </span>
                     <span className="w-2 h-2" style={{ background: color }} />
                     <h4 className="font-display text-xs tracking-widest" style={{ color }}>{node.label}</h4>
                   </div>
                   <span className="font-mono text-[10px]" style={{ color }}>LV {node.level}/{node.max}</span>
                 </div>
-
-                {/* Level pips */}
-                <div className="flex gap-1 mb-2">
-                  {Array.from({ length: node.max }).map((_, i) => (
-                    <motion.span
-                      key={i}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.05 * i, type: "spring", stiffness: 260 }}
-                      className="flex-1 h-1.5"
-                      style={{
-                        background: i < node.level ? color : `${color}22`,
-                        boxShadow: i < node.level ? `0 0 8px ${color}` : "none",
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* XP progress bar */}
-                <div className="mb-3">
-                  <div className="flex justify-between font-mono text-[9px] text-muted-foreground tracking-widest mb-1">
-                    <span>XP</span>
-                    <span style={{ color }}><CountUp value={node.xp} /> / 10,000</span>
-                  </div>
-                  <div className="h-1.5 border relative overflow-hidden" style={{ borderColor: `${color}44` }}>
-                    <motion.div
-                      key={node.id + "-xp"}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(100, (node.xp / 10000) * 100)}%` }}
-                      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                      className="h-full relative"
-                      style={{ background: `linear-gradient(90deg, ${color}66, ${color})` }}
-                    >
-                      <motion.div
-                        className="absolute inset-y-0 w-6"
-                        style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)`, filter: "blur(2px)" }}
-                        animate={{ x: ["-100%", "400%"] }}
-                        transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
-                      />
-                    </motion.div>
-                  </div>
-                </div>
-
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
-                    <div className="font-display text-base" style={{ color }}><CountUp value={node.years} suffix="y" /></div>
+                    <div className="font-display text-base" style={{ color }}>{node.years}y</div>
                     <div className="font-mono text-[8px] text-muted-foreground tracking-widest">EXP</div>
                   </div>
                   <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
-                    <div className="font-display text-base" style={{ color }}><CountUp value={node.xp} /></div>
+                    <div className="font-display text-base" style={{ color }}>{node.xp.toLocaleString()}</div>
                     <div className="font-mono text-[8px] text-muted-foreground tracking-widest">XP</div>
                   </div>
                   <div className="text-center border py-1.5" style={{ borderColor: `${color}33` }}>
-                    <div className="font-display text-base" style={{ color }}><CountUp value={node.projects.length} /></div>
+                    <div className="font-display text-base" style={{ color }}>{node.projects.length}</div>
                     <div className="font-mono text-[8px] text-muted-foreground tracking-widest">SHIPPED</div>
                   </div>
                 </div>
-
                 <div className="font-mono text-[10px] text-muted-foreground mb-1 tracking-widest">▸ HIGHLIGHTS</div>
                 <ul className="mb-3 space-y-0.5">
                   {node.highlights.map((h) => (
@@ -370,51 +237,21 @@ export function SkillTree() {
               </motion.div>
             </AnimatePresence>
 
-            {/* Numbered roster */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              className="corner-frame bg-card/70 backdrop-blur-md p-3 relative overflow-hidden"
-            >
-              <span className="c-bl" /><span className="c-br" />
-              <div className="font-mono text-[10px] text-muted-foreground mb-2 tracking-widest">▸ NODE ROSTER</div>
-              <ul className="space-y-1.5">
-                {NODES.map((n, i) => {
-                  const bc = BRANCH_COLOR[n.branch];
-                  const active = n.id === picked;
-                  const dim = filter !== "all" && n.branch !== filter;
-                  return (
-                    <motion.li
-                      key={n.id}
-                      onMouseEnter={() => setHover(n.id)} onMouseLeave={() => setHover(null)}
-                      onClick={() => setPicked(n.id)}
-                      whileHover={{ x: 2 }}
-                      animate={{ opacity: dim ? 0.35 : 1 }}
-                      className="cursor-pointer grid grid-cols-[26px_1fr_auto] items-center gap-2 px-1.5 py-1 border-l-2"
-                      style={{
-                        borderColor: active ? bc : `${bc}33`,
-                        background: active ? `color-mix(in oklab, ${bc} 12%, transparent)` : "transparent",
-                      }}
-                    >
-                      <span className="font-mono text-[10px] tabular-nums" style={{ color: bc }}>{String(i + 1).padStart(2, "0")}</span>
-                      <div className="min-w-0">
-                        <div className="font-display text-[11px] tracking-widest truncate" style={{ color: active ? bc : "var(--foreground)" }}>{n.label}</div>
-                        <div className="h-1 mt-0.5 border relative overflow-hidden" style={{ borderColor: `${bc}44` }}>
-                          <motion.div
-                            initial={{ width: 0 }} whileInView={{ width: `${(n.level / n.max) * 100}%` }}
-                            viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.05 * i, ease: [0.16, 1, 0.3, 1] }}
-                            className="h-full"
-                            style={{ background: `linear-gradient(90deg, ${bc}77, ${bc})`, boxShadow: `0 0 6px ${bc}` }}
-                          />
-                        </div>
-                      </div>
-                      <span className="font-mono text-[10px] tabular-nums" style={{ color: bc }}>LV{n.level}/{n.max}</span>
-                    </motion.li>
-                  );
-                })}
-              </ul>
-            </motion.div>
+            {(["core", "design", "engine"] as const).map((b, i) => (
+              <motion.div
+                key={b}
+                initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className="corner-frame bg-card backdrop-blur-md p-3"
+              >
+                <span className="c-bl" /><span className="c-br" />
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2" style={{ background: BRANCH_COLOR[b] }} />
+                  <h4 className="font-display text-[11px] tracking-widest" style={{ color: BRANCH_COLOR[b] }}>{b.toUpperCase()} BRANCH</h4>
+                </div>
+              </motion.div>
+            ))}
           </div>
-
         </div>
       </div>
     </section>
