@@ -161,12 +161,27 @@ type QualityKey = keyof typeof QUALITIES;
 const QUALITY_STORAGE_KEY = "world3d:quality";
 const THEME_STORAGE_KEY = "world3d:theme";
 
+function CameraRig({ target }: { target: [number, number, number] | null }) {
+  const { camera } = useThree();
+  const tgt = useRef(new THREE.Vector3());
+  useFrame(() => {
+    if (!target) return;
+    tgt.current.set(target[0] * 1.6, target[1] * 1.6 + 0.4, target[2] * 1.6 + 3.2);
+    camera.position.lerp(tgt.current, 0.05);
+    camera.lookAt(target[0], target[1], target[2]);
+  });
+  return null;
+}
+
 export function World3D() {
   const [themeIdx, setThemeIdx] = useState(0);
   const [pulse, setPulse] = useState(0);
   const [quality, setQuality] = useState<QualityKey>("MEDIUM");
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [focused, setFocused] = useState<string | null>(null);
   const theme = THEMES[themeIdx];
   const q = QUALITIES[quality];
+  const focusNode = focused ? NODES.find((n) => n.label === focused) ?? null : null;
 
   // hydrate persisted settings (client-only)
   useEffect(() => {
