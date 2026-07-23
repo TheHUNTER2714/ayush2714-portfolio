@@ -94,7 +94,7 @@ export function SkillTree() {
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
       <div className="max-w-6xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
-          <div className="font-mono text-xs text-primary mb-2">▸ SKILL_TREE.bin // ALLOC 9/12 · TAP A NODE · SYNCED W/ RESUME</div>
+          <div className="font-mono text-xs text-primary mb-2">▸ SKILL_TREE.bin // ALLOC {NODES.length}/{NODES.length} · TAP A NODE · SYNCED W/ RESUME</div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">ABILITY <span className="text-accent text-glow-accent">MATRIX</span></h2>
         </motion.div>
 
@@ -154,10 +154,12 @@ export function SkillTree() {
                         background: "oklch(0.13 0.03 260)",
                       }}
                     />
-                    <span className="relative font-display font-bold text-xs" style={{ color: ncolor }}>{n.level}</span>
+                    <span className="relative font-display font-bold text-xs leading-none" style={{ color: ncolor }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
                   </motion.div>
                   <div className={`absolute left-1/2 -translate-x-1/2 top-full mt-1 whitespace-nowrap font-mono text-[10px] transition-opacity ${isHover || isPicked ? "opacity-100" : "opacity-60"}`} style={{ color: ncolor }}>
-                    {n.label}
+                    {n.label} · LV{n.level}/{n.max}
                   </div>
                 </motion.button>
               );
