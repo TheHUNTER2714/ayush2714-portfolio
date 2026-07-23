@@ -29,7 +29,7 @@ const THEMES = [
   { name: "MATRIX", core: "#34d399", a: "#22d3ee", b: "#a78bfa" },
 ];
 
-function SkillNode({ node, theme }: { node: Node; theme: typeof THEMES[number] }) {
+function SkillNode({ node, theme, focused, onFocus }: { node: Node; theme: typeof THEMES[number]; focused: boolean; onFocus: () => void }) {
   const ref = useRef<THREE.Mesh>(null);
   const [hover, setHover] = useState(false);
 
