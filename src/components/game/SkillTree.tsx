@@ -179,12 +179,14 @@ export function SkillTree() {
                 n.connects.map((cid) => {
                   const c = NODES.find((x) => x.id === cid)!;
                   const active = hover === n.id || hover === cid || picked === n.id || picked === cid;
+                  const dim = filter !== "all" && n.branch !== filter && c.branch !== filter;
                   return (
                     <line
                       key={`${n.id}-${cid}`} x1={n.x} y1={n.y} x2={c.x} y2={c.y}
                       stroke={active ? "var(--hud)" : "oklch(0.82 0.18 195 / 0.35)"}
                       strokeWidth={active ? "0.5" : "0.2"}
                       strokeDasharray="1.5 1"
+                      opacity={dim ? 0.12 : 1}
                     >
                       <animate attributeName="stroke-dashoffset" from="0" to="-10" dur="3s" repeatCount="indefinite" />
                     </line>
@@ -197,6 +199,7 @@ export function SkillTree() {
               const ncolor = BRANCH_COLOR[n.branch];
               const isHover = hover === n.id;
               const isPicked = picked === n.id;
+              const dim = filter !== "all" && n.branch !== filter;
               return (
                 <motion.button
                   key={n.id}
@@ -205,9 +208,21 @@ export function SkillTree() {
                   initial={{ opacity: 0, scale: 0 }} whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }} transition={{ delay: 0.1 + i * 0.06, type: "spring" }}
                   whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.92 }}
+                  animate={{ opacity: dim ? 0.28 : 1 }}
                   className="absolute -translate-x-1/2 -translate-y-1/2 group"
                   style={{ left: `${n.x}%`, top: `${n.y}%` }}
+                  aria-label={`${String(i + 1).padStart(2, "0")} ${n.label} level ${n.level} of ${n.max}`}
                 >
+                  {/* orbit ring for picked */}
+                  {isPicked && (
+                    <motion.span
+                      aria-hidden
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+                      style={{ borderColor: ncolor, width: 72, height: 72, boxShadow: `0 0 24px ${ncolor}` }}
+                      animate={{ rotate: 360, scale: [1, 1.08, 1] }}
+                      transition={{ rotate: { duration: 8, repeat: Infinity, ease: "linear" }, scale: { duration: 2, repeat: Infinity } }}
+                    />
+                  )}
                   <motion.div
                     animate={isPicked ? { boxShadow: [`0 0 12px ${ncolor}`, `0 0 32px ${ncolor}`, `0 0 12px ${ncolor}`] } : {}}
                     transition={{ duration: 1.6, repeat: Infinity }}
@@ -229,12 +244,13 @@ export function SkillTree() {
                     </span>
                   </motion.div>
                   <div className={`absolute left-1/2 -translate-x-1/2 top-full mt-1 whitespace-nowrap font-mono text-[10px] transition-opacity ${isHover || isPicked ? "opacity-100" : "opacity-60"}`} style={{ color: ncolor }}>
-                    {n.label} · LV{n.level}/{n.max}
+                    {String(i + 1).padStart(2, "0")} · {n.label} · LV{n.level}/{n.max}
                   </div>
                 </motion.button>
               );
             })}
           </div>
+
 
           {/* Side panel: inspector */}
           <div className="space-y-4">
