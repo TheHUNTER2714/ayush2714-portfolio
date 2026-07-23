@@ -3,7 +3,7 @@ import { Float, OrbitControls, Stars, Text, Html, Trail, Sparkles } from "@react
 import { useRef, useState, Suspense, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import * as THREE from "three";
-import { LaunchGate } from "./LaunchGate";
+
 
 type Node = {
   label: string;

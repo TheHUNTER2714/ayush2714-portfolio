@@ -50,6 +50,22 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
         v.muted = true;
         setMuted(true);
         v.play().then(() => setPlayed(true)).catch(() => {});
+        // On the FIRST user gesture anywhere on the page, unmute smoothly.
+        const unmute = () => {
+          const vid = ref.current;
+          if (!vid) return;
+          vid.muted = false;
+          vid.volume = volume;
+          setMuted(false);
+          window.removeEventListener("pointerdown", unmute);
+          window.removeEventListener("keydown", unmute);
+          window.removeEventListener("touchstart", unmute);
+          window.removeEventListener("scroll", unmute);
+        };
+        window.addEventListener("pointerdown", unmute, { once: true, passive: true });
+        window.addEventListener("keydown", unmute, { once: true });
+        window.addEventListener("touchstart", unmute, { once: true, passive: true });
+        window.addEventListener("scroll", unmute, { once: true, passive: true });
       });
   }, [autoStart, played, volume]);
 
