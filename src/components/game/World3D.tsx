@@ -236,8 +236,18 @@ export function World3D() {
               <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
               {q.probes > 1 && <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />}
               {q.probes > 2 && <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />}
-              {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
-              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
+              {NODES.map((n) => (
+                <SkillNode
+                  key={n.label}
+                  node={n}
+                  theme={theme}
+                  focused={focused === n.label}
+                  onFocus={() => { setFocused((f) => (f === n.label ? null : n.label)); setAutoRotate(false); }}
+                />
+              ))}
+              {focusNode && <CameraRig target={focusNode.pos} />}
+              <OrbitControls enablePan={false} autoRotate={autoRotate && !focused} autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
+
             </Suspense>
           </Canvas>
 
