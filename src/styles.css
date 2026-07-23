@@ -1,10 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap');
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
