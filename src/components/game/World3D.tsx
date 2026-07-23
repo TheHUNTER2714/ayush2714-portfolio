@@ -37,7 +37,7 @@ function SkillNode({ node, theme, focused, onFocus }: { node: Node; theme: typeo
     if (!ref.current) return;
     ref.current.rotation.x = clock.elapsedTime * 0.6;
     ref.current.rotation.y = clock.elapsedTime * 0.4;
-    const target = hover ? 0.62 : 0.42;
+    const target = focused ? 0.78 : hover ? 0.62 : 0.42;
     ref.current.scale.lerp(new THREE.Vector3(target, target, target), 0.15);
   });
 
@@ -54,7 +54,7 @@ function SkillNode({ node, theme, focused, onFocus }: { node: Node; theme: typeo
           <meshStandardMaterial
             color={node.color}
             emissive={node.color}
-            emissiveIntensity={hover ? 1.6 : 0.7}
+            emissiveIntensity={focused ? 2.2 : hover ? 1.6 : 0.7}
             wireframe
           />
         </mesh>
