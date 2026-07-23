@@ -48,6 +48,7 @@ function SkillNode({ node, theme, focused, onFocus }: { node: Node; theme: typeo
           ref={ref}
           onPointerOver={(e) => { e.stopPropagation(); setHover(true); document.body.style.cursor = "pointer"; }}
           onPointerOut={() => { setHover(false); document.body.style.cursor = "default"; }}
+          onClick={(e) => { e.stopPropagation(); onFocus(); }}
         >
           <octahedronGeometry args={[1, 0]} />
           <meshStandardMaterial
