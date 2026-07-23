@@ -97,16 +97,76 @@ const BRANCH_COLOR: Record<string, string> = {
 export function SkillTree() {
   const [hover, setHover] = useState<string | null>(null);
   const [picked, setPicked] = useState<string>("n1");
+  const [filter, setFilter] = useState<"all" | "core" | "design" | "engine">("all");
   const node = NODES.find((n) => n.id === picked)!;
   const color = BRANCH_COLOR[node.branch];
+
+  const totals = useMemo(() => {
+    const xp = NODES.reduce((s, n) => s + n.xp, 0);
+    const lvl = NODES.reduce((s, n) => s + n.level, 0);
+    const max = NODES.reduce((s, n) => s + n.max, 0);
+    return { xp, avgLvl: (lvl / NODES.length).toFixed(1), pct: Math.round((lvl / max) * 100), shipped: NODES.reduce((s, n) => s + n.projects.length, 0) };
+  }, []);
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
       <div className="max-w-6xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-6">
           <div className="font-mono text-xs text-primary mb-2">▸ SKILL_TREE.bin // ALLOC {NODES.length}/{NODES.length} · TAP A NODE · SYNCED W/ RESUME</div>
           <h2 className="font-display font-black text-4xl md:text-6xl text-glow">ABILITY <span className="text-accent text-glow-accent">MATRIX</span></h2>
         </motion.div>
+
+        {/* Totals + branch filter */}
+        <div className="grid md:grid-cols-[1fr_auto] gap-4 mb-6">
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { k: "NODES", v: NODES.length, s: "" },
+              { k: "AVG LV", v: parseFloat(totals.avgLvl), s: "" },
+              { k: "TOTAL XP", v: totals.xp, s: "" },
+              { k: "MASTERY", v: totals.pct, s: "%" },
+            ].map((t, i) => (
+              <motion.div
+                key={t.k}
+                initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className="corner-frame bg-card/60 backdrop-blur-md p-2.5 relative overflow-hidden"
+              >
+                <span className="c-bl" /><span className="c-br" />
+                <div className="font-mono text-[9px] text-muted-foreground tracking-widest">{t.k}</div>
+                <div className="font-display text-xl text-primary text-glow"><CountUp value={t.v} suffix={t.s} /></div>
+                <motion.div
+                  className="absolute inset-x-0 bottom-0 h-px"
+                  style={{ background: "linear-gradient(90deg, transparent, var(--hud), transparent)" }}
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 2.4, repeat: Infinity, ease: "linear", delay: i * 0.2 }}
+                />
+              </motion.div>
+            ))}
+          </div>
+          <div className="flex gap-1.5 items-center">
+            {(["all", "core", "design", "engine"] as const).map((b) => {
+              const active = filter === b;
+              const bcolor = b === "all" ? "var(--hud)" : BRANCH_COLOR[b];
+              return (
+                <motion.button
+                  key={b}
+                  whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.94 }}
+                  onClick={() => setFilter(b)}
+                  className="px-2.5 py-1.5 corner-frame font-mono text-[10px] tracking-widest backdrop-blur-md relative"
+                  style={{
+                    background: active ? `color-mix(in oklab, ${bcolor} 18%, transparent)` : "rgba(0,0,0,0.35)",
+                    color: bcolor,
+                    boxShadow: active ? `0 0 14px color-mix(in oklab, ${bcolor} 55%, transparent)` : "none",
+                  }}
+                >
+                  <span className="c-bl" /><span className="c-br" />
+                  {b.toUpperCase()}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+
 
         <div className="grid lg:grid-cols-[1fr_320px] gap-6">
           <div className="relative corner-frame box-glow bg-card backdrop-blur-md aspect-[4/5] md:aspect-[5/4] overflow-hidden">
