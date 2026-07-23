@@ -370,21 +370,51 @@ export function SkillTree() {
               </motion.div>
             </AnimatePresence>
 
-            {(["core", "design", "engine"] as const).map((b, i) => (
-              <motion.div
-                key={b}
-                initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="corner-frame bg-card backdrop-blur-md p-3"
-              >
-                <span className="c-bl" /><span className="c-br" />
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2" style={{ background: BRANCH_COLOR[b] }} />
-                  <h4 className="font-display text-[11px] tracking-widest" style={{ color: BRANCH_COLOR[b] }}>{b.toUpperCase()} BRANCH</h4>
-                </div>
-              </motion.div>
-            ))}
+            {/* Numbered roster */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="corner-frame bg-card/70 backdrop-blur-md p-3 relative overflow-hidden"
+            >
+              <span className="c-bl" /><span className="c-br" />
+              <div className="font-mono text-[10px] text-muted-foreground mb-2 tracking-widest">▸ NODE ROSTER</div>
+              <ul className="space-y-1.5">
+                {NODES.map((n, i) => {
+                  const bc = BRANCH_COLOR[n.branch];
+                  const active = n.id === picked;
+                  const dim = filter !== "all" && n.branch !== filter;
+                  return (
+                    <motion.li
+                      key={n.id}
+                      onMouseEnter={() => setHover(n.id)} onMouseLeave={() => setHover(null)}
+                      onClick={() => setPicked(n.id)}
+                      whileHover={{ x: 2 }}
+                      animate={{ opacity: dim ? 0.35 : 1 }}
+                      className="cursor-pointer grid grid-cols-[26px_1fr_auto] items-center gap-2 px-1.5 py-1 border-l-2"
+                      style={{
+                        borderColor: active ? bc : `${bc}33`,
+                        background: active ? `color-mix(in oklab, ${bc} 12%, transparent)` : "transparent",
+                      }}
+                    >
+                      <span className="font-mono text-[10px] tabular-nums" style={{ color: bc }}>{String(i + 1).padStart(2, "0")}</span>
+                      <div className="min-w-0">
+                        <div className="font-display text-[11px] tracking-widest truncate" style={{ color: active ? bc : "var(--foreground)" }}>{n.label}</div>
+                        <div className="h-1 mt-0.5 border relative overflow-hidden" style={{ borderColor: `${bc}44` }}>
+                          <motion.div
+                            initial={{ width: 0 }} whileInView={{ width: `${(n.level / n.max) * 100}%` }}
+                            viewport={{ once: true }} transition={{ duration: 0.9, delay: 0.05 * i, ease: [0.16, 1, 0.3, 1] }}
+                            className="h-full"
+                            style={{ background: `linear-gradient(90deg, ${bc}77, ${bc})`, boxShadow: `0 0 6px ${bc}` }}
+                          />
+                        </div>
+                      </div>
+                      <span className="font-mono text-[10px] tabular-nums" style={{ color: bc }}>LV{n.level}/{n.max}</span>
+                    </motion.li>
+                  );
+                })}
+              </ul>
+            </motion.div>
           </div>
+
         </div>
       </div>
     </section>
