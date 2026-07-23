@@ -200,7 +200,8 @@ export function World3D() {
           <p className="font-mono text-xs text-muted-foreground mt-2">drag to orbit · scroll to zoom · hover a node · cycle themes · tune quality · pulse to ignite</p>
         </motion.div>
 
-        <LaunchGate label="ENTER SKILL NEBULA" hint="▸ tap to boot 3D world · uses GPU" height={600} accent={theme.core}>
+        <div className="relative corner-frame box-glow bg-card/60 backdrop-blur-md overflow-hidden" style={{ height: 600 }}>
+          <span className="c-bl" /><span className="c-br" />
           <Canvas
             key={quality}
             camera={{ position: [0, 0.4, 6.2], fov: 55 }}
@@ -294,7 +295,7 @@ export function World3D() {
           <div className="absolute bottom-3 left-3 font-mono text-[10px] text-muted-foreground">
             ▸ {quality.toLowerCase()} preset · {q.stars} stars · {q.sparkles} sparkles · {q.probes} probes
           </div>
-        </LaunchGate>
+        </div>
       </div>
     </section>
   );
