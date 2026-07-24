@@ -196,6 +196,10 @@ export function World3D() {
   // are already running, which was blanking the nebula with "Context Lost".
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [inView, setInView] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [scrolling, setScrolling] = useState(false);
+  const [ctxLost, setCtxLost] = useState(false);
+
   useEffect(() => {
     const el = containerRef.current;
     if (!el || typeof IntersectionObserver === "undefined") { setInView(true); return; }
@@ -206,6 +210,29 @@ export function World3D() {
     io.observe(el);
     return () => io.disconnect();
   }, []);
+
+  // Throttle scroll-triggered updates: pause the render loop while the user
+  // is actively scrolling, then resume shortly after they stop. Uses rAF +
+  // a trailing timeout so we don't thrash React state on every scroll tick.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let ticking = false;
+    let stopT: ReturnType<typeof setTimeout> | null = null;
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => { ticking = false; });
+        setScrolling(true);
+      }
+      if (stopT) clearTimeout(stopT);
+      stopT = setTimeout(() => setScrolling(false), 180);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { window.removeEventListener("scroll", onScroll); if (stopT) clearTimeout(stopT); };
+  }, []);
+
+  // Reset ready flag when we remount the canvas
+  useEffect(() => { setReady(false); setCtxLost(false); }, [quality, inView]);
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
@@ -218,16 +245,18 @@ export function World3D() {
 
         <div ref={containerRef} className="relative corner-frame box-glow bg-card/60 backdrop-blur-md overflow-hidden" style={{ height: 600 }}>
           <span className="c-bl" /><span className="c-br" />
-          {inView && (
+          {inView && !ctxLost && (
             <Canvas
               key={quality}
               camera={{ position: [0, 0.4, 6.2], fov: 55 }}
               dpr={q.dpr}
-              frameloop="always"
+              frameloop={scrolling ? "demand" : "always"}
               gl={{ antialias: q.antialias, powerPreference: quality === "LOW" ? "low-power" : "high-performance", failIfMajorPerformanceCaveat: false, preserveDrawingBuffer: false }}
               onCreated={({ gl }) => {
                 const canvas = gl.domElement;
-                canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); }, false);
+                canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); setCtxLost(true); }, false);
+                canvas.addEventListener("webglcontextrestored", () => { setCtxLost(false); }, false);
+                requestAnimationFrame(() => setTimeout(() => setReady(true), 120));
               }}
             >
               <Suspense fallback={null}>
@@ -247,9 +276,67 @@ export function World3D() {
               </Suspense>
             </Canvas>
           )}
+
+          {/* Loading UI — shown until first frame paints */}
+          {inView && !ready && !ctxLost && (
+            <div className="absolute inset-0 grid place-items-center pointer-events-none">
+              <div className="flex flex-col items-center gap-3">
+                <div className="relative w-16 h-16">
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-transparent"
+                    style={{ borderTopColor: theme.core, borderRightColor: theme.a }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.div
+                    className="absolute inset-2 rounded-full border border-transparent"
+                    style={{ borderBottomColor: theme.b }}
+                    animate={{ rotate: -360 }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
+                  />
+                  <motion.div
+                    className="absolute inset-5 rounded-full"
+                    style={{ background: theme.core, boxShadow: `0 0 18px ${theme.core}` }}
+                    animate={{ scale: [0.8, 1.15, 0.8], opacity: [0.6, 1, 0.6] }}
+                    transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
+                <div className="font-mono text-[10px] tracking-[0.3em]" style={{ color: theme.core }}>
+                  <motion.span animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.2, repeat: Infinity }}>
+                    IGNITING NEBULA · {quality}
+                  </motion.span>
+                </div>
+                <div className="w-40 h-0.5 bg-white/10 overflow-hidden">
+                  <motion.div
+                    className="h-full"
+                    style={{ background: `linear-gradient(90deg, transparent, ${theme.core}, transparent)` }}
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {!inView && (
             <div className="absolute inset-0 grid place-items-center font-mono text-xs text-primary/70">
               ▸ nebula standing by · scroll into view to ignite
+            </div>
+          )}
+
+          {ctxLost && (
+            <div className="absolute inset-0 grid place-items-center text-center">
+              <div>
+                <div className="font-mono text-xs text-destructive mb-2">⚠ WEBGL CONTEXT LOST</div>
+                <button
+                  onClick={() => { setCtxLost(false); setReady(false); }}
+                  className="corner-frame font-mono text-[10px] px-3 py-1.5"
+                  style={{ color: theme.core, background: `${theme.core}22` }}
+                >
+                  <span className="c-bl" /><span className="c-br" />
+                  ↻ REBOOT NEBULA
+                </button>
+              </div>
             </div>
           )}
 
