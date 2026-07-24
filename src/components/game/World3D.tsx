@@ -191,6 +191,22 @@ export function World3D() {
     try { window.localStorage.setItem(THEME_STORAGE_KEY, String(themeIdx)); } catch {}
   }, [themeIdx]);
 
+  // Lazy-mount the Canvas only when the nebula is on-screen. Prevents
+  // WebGL context exhaustion when other 3D canvases (portrait, background)
+  // are already running, which was blanking the nebula with "Context Lost".
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") { setInView(true); return; }
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "200px 0px", threshold: 0.05 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
       <div className="max-w-6xl mx-auto">
@@ -200,30 +216,43 @@ export function World3D() {
           <p className="font-mono text-xs text-muted-foreground mt-2">drag to orbit · scroll to zoom · hover a node · cycle themes · tune quality · pulse to ignite</p>
         </motion.div>
 
-        <div className="relative corner-frame box-glow bg-card/60 backdrop-blur-md overflow-hidden" style={{ height: 600 }}>
+        <div ref={containerRef} className="relative corner-frame box-glow bg-card/60 backdrop-blur-md overflow-hidden" style={{ height: 600 }}>
           <span className="c-bl" /><span className="c-br" />
-          <Canvas
-            key={quality}
-            camera={{ position: [0, 0.4, 6.2], fov: 55 }}
-            dpr={q.dpr}
-            gl={{ antialias: q.antialias, powerPreference: quality === "LOW" ? "low-power" : "high-performance" }}
-          >
-            <Suspense fallback={null}>
-              <ambientLight intensity={0.4} />
-              <pointLight position={[5, 5, 5]} intensity={1.6} color={theme.a} />
-              <pointLight position={[-5, -5, -5]} intensity={1.2} color={theme.b} />
-              <pointLight position={[0, -4, 4]} intensity={0.8} color={theme.core} />
-              <Stars radius={70} depth={45} count={q.stars} factor={3.2} fade speed={1} />
-              <Sparkles count={q.sparkles} scale={8} size={2} speed={0.4} color={theme.core} opacity={0.7} />
-              <CoreOrb color={theme.core} pulse={pulse} />
-              <ConnectionLines color={theme.core} />
-              <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
-              {q.probes > 1 && <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />}
-              {q.probes > 2 && <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />}
-              {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
-              <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
-            </Suspense>
-          </Canvas>
+          {inView && (
+            <Canvas
+              key={quality}
+              camera={{ position: [0, 0.4, 6.2], fov: 55 }}
+              dpr={q.dpr}
+              frameloop="always"
+              gl={{ antialias: q.antialias, powerPreference: quality === "LOW" ? "low-power" : "high-performance", failIfMajorPerformanceCaveat: false, preserveDrawingBuffer: false }}
+              onCreated={({ gl }) => {
+                const canvas = gl.domElement;
+                canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); }, false);
+              }}
+            >
+              <Suspense fallback={null}>
+                <ambientLight intensity={0.4} />
+                <pointLight position={[5, 5, 5]} intensity={1.6} color={theme.a} />
+                <pointLight position={[-5, -5, -5]} intensity={1.2} color={theme.b} />
+                <pointLight position={[0, -4, 4]} intensity={0.8} color={theme.core} />
+                <Stars radius={70} depth={45} count={q.stars} factor={3.2} fade speed={1} />
+                <Sparkles count={q.sparkles} scale={8} size={2} speed={0.4} color={theme.core} opacity={0.7} />
+                <CoreOrb color={theme.core} pulse={pulse} />
+                <ConnectionLines color={theme.core} />
+                <OrbitingProbe color={theme.a} radius={3.1} speed={0.55} />
+                {q.probes > 1 && <OrbitingProbe color={theme.b} radius={2.4} speed={-0.7} />}
+                {q.probes > 2 && <OrbitingProbe color={theme.core} radius={3.8} speed={0.32} />}
+                {NODES.map((n) => <SkillNode key={n.label} node={n} theme={theme} />)}
+                <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.55} minDistance={4} maxDistance={11} />
+              </Suspense>
+            </Canvas>
+          )}
+          {!inView && (
+            <div className="absolute inset-0 grid place-items-center font-mono text-xs text-primary/70">
+              ▸ nebula standing by · scroll into view to ignite
+            </div>
+          )}
+
 
           {pulse > 0 && (
             <motion.div
