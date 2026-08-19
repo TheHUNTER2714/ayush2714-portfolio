@@ -37,6 +37,10 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
   const [canPlay, setCanPlay] = useState(false);
   const [failed, setFailed] = useState(false);
   const [needsTap, setNeedsTap] = useState(false);
+  // Static file first (works on any host, e.g. Vercel/GitHub Pages);
+  // fall back to the managed asset URL if it's missing.
+  const [srcUrl, setSrcUrl] = useState("/intro.mp4");
+
 
   const startPlayback = () => {
     const v = ref.current;
