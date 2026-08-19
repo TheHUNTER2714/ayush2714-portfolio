@@ -244,12 +244,12 @@ export function World3D() {
 
         <div ref={containerRef} className="relative corner-frame box-glow bg-card/60 backdrop-blur-md overflow-hidden" style={{ height: 600 }}>
           <span className="c-bl" /><span className="c-br" />
-          {inView && !ctxLost && (
+          {ignited && !ctxLost && (
             <Canvas
               key={quality}
               camera={{ position: [0, 0.4, 6.2], fov: 55 }}
               dpr={q.dpr}
-              frameloop={scrolling ? "demand" : "always"}
+              frameloop={inView && !scrolling ? "always" : "demand"}
               gl={{ antialias: q.antialias, powerPreference: quality === "LOW" ? "low-power" : "high-performance", failIfMajorPerformanceCaveat: false, preserveDrawingBuffer: false }}
               onCreated={({ gl }) => {
                 const canvas = gl.domElement;
@@ -277,7 +277,7 @@ export function World3D() {
           )}
 
           {/* Loading UI — shown until first frame paints */}
-          {inView && !ready && !ctxLost && (
+          {ignited && !ready && !ctxLost && (
             <div className="absolute inset-0 grid place-items-center pointer-events-none">
               <div className="flex flex-col items-center gap-3">
                 <div className="relative w-16 h-16">
@@ -317,7 +317,7 @@ export function World3D() {
             </div>
           )}
 
-          {!inView && (
+          {!ignited && (
             <div className="absolute inset-0 grid place-items-center font-mono text-xs text-primary/70">
               ▸ nebula standing by · scroll into view to ignite
             </div>
