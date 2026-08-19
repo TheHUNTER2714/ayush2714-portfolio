@@ -34,22 +34,24 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
   const [volume, setVolume] = useState(0.9);
   const [paused, setPaused] = useState(false);
   const [showCC, setShowCC] = useState(true);
+  const [canPlay, setCanPlay] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
 
-  // Cinematic auto-start: after the blast doors open, play ONCE from the top.
-  // Try with audio first; if the browser blocks unmuted autoplay, fall back
-  // to muted playback + the visible "TAP FOR AUDIO" nudge.
-  useEffect(() => {
+  const startPlayback = () => {
     const v = ref.current;
-    if (!v || !autoStart || played) return;
+    if (!v) return;
     v.currentTime = 0;
     v.volume = volume;
     v.muted = false;
     v.play()
-      .then(() => { setMuted(false); setPlayed(true); })
+      .then(() => { setMuted(false); setPlayed(true); setNeedsTap(false); })
       .catch(() => {
         v.muted = true;
         setMuted(true);
-        v.play().then(() => setPlayed(true)).catch(() => {});
+        v.play()
+          .then(() => { setPlayed(true); setNeedsTap(false); })
+          .catch(() => setNeedsTap(true));
         // On the FIRST user gesture anywhere on the page, unmute smoothly.
         const unmute = () => {
           const vid = ref.current;
@@ -67,7 +69,16 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
         window.addEventListener("touchstart", unmute, { once: true, passive: true });
         window.addEventListener("scroll", unmute, { once: true, passive: true });
       });
-  }, [autoStart, played, volume]);
+  };
+
+  // Cinematic auto-start: after the blast doors open, play ONCE from the top.
+  // Waits for the media to be ready so the frame is never left blank.
+  useEffect(() => {
+    if (!autoStart || played || !canPlay) return;
+    startPlayback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, played, canPlay]);
+
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -93,16 +104,23 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
       setTime(v.currentTime);
       setProgress(v.currentTime / v.duration);
     };
-    const onMeta = () => setDuration(v.duration || 0);
+    const onMeta = () => { setDuration(v.duration || 0); setCanPlay(true); };
+    const onCanPlay = () => { setCanPlay(true); setFailed(false); };
+    const onError = () => setFailed(true);
     const onPause = () => setPaused(true);
     const onPlay = () => setPaused(false);
     v.addEventListener("timeupdate", onTime);
     v.addEventListener("loadedmetadata", onMeta);
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("error", onError);
+    if (v.readyState >= 2) setCanPlay(true);
     v.addEventListener("pause", onPause);
     v.addEventListener("play", onPlay);
     return () => {
       v.removeEventListener("timeupdate", onTime);
       v.removeEventListener("loadedmetadata", onMeta);
+    v.removeEventListener("canplay", onCanPlay);
+    v.removeEventListener("error", onError);
       v.removeEventListener("pause", onPause);
       v.removeEventListener("play", onPlay);
     };
@@ -255,6 +273,43 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* LOADING / TAP-TO-PLAY / ERROR overlays — never leave a blank frame */}
+        {!canPlay && !failed && (
+          <div className="absolute inset-0 grid place-items-center pointer-events-none">
+            <motion.div
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+              className="font-mono text-[11px] tracking-[0.3em] text-primary"
+            >
+              ▸ BUFFERING INTRO FEED…
+            </motion.div>
+          </div>
+        )}
+
+        {(needsTap || (canPlay && !played)) && !ended && !failed && (
+          <button
+            onClick={startPlayback}
+            className="absolute inset-0 grid place-items-center bg-background/40 backdrop-blur-[2px]"
+          >
+            <span className="corner-frame bg-card px-6 py-3 font-display text-sm tracking-[0.3em] text-primary">
+              <span className="c-bl" /><span className="c-br" />
+              ▶ PLAY INTRO
+            </span>
+          </button>
+        )}
+
+        {failed && (
+          <div className="absolute inset-0 grid place-items-center text-center">
+            <button
+              onClick={() => { const v = ref.current; if (!v) return; setFailed(false); v.load(); }}
+              className="corner-frame bg-card px-5 py-2.5 font-display text-xs tracking-widest text-accent"
+            >
+              <span className="c-bl" /><span className="c-br" />
+              ↻ RELOAD FEED
+            </button>
+          </div>
+        )}
 
         {/* MUTED nudge — encourages unmute */}
         <AnimatePresence>
