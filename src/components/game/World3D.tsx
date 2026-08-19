@@ -211,28 +211,27 @@ export function World3D() {
     return () => io.disconnect();
   }, []);
 
-  // Throttle scroll-triggered updates: pause the render loop while the user
-  // is actively scrolling, then resume shortly after they stop. Uses rAF +
-  // a trailing timeout so we don't thrash React state on every scroll tick.
+  // Keep the canvas alive once it has ignited — remounting on every scroll
+  // in/out was what left the nebula blank. We only throttle the render loop.
+  const [ignited, setIgnited] = useState(false);
+  useEffect(() => { if (inView) setIgnited(true); }, [inView]);
+
+  // Throttle offscreen work: drop to on-demand rendering when scrolled away.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    let ticking = false;
     let stopT: ReturnType<typeof setTimeout> | null = null;
     const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => { ticking = false; });
-        setScrolling(true);
-      }
+      setScrolling(true);
       if (stopT) clearTimeout(stopT);
-      stopT = setTimeout(() => setScrolling(false), 180);
+      stopT = setTimeout(() => setScrolling(false), 160);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => { window.removeEventListener("scroll", onScroll); if (stopT) clearTimeout(stopT); };
   }, []);
 
-  // Reset ready flag when we remount the canvas
-  useEffect(() => { setReady(false); setCtxLost(false); }, [quality, inView]);
+  // Reset ready flag only when the canvas actually remounts (quality change)
+  useEffect(() => { setReady(false); setCtxLost(false); }, [quality]);
+
 
   return (
     <section className="min-h-screen px-6 md:px-16 pt-32 pb-32">
