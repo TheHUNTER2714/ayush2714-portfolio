@@ -193,7 +193,8 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
       <div className="relative aspect-[16/10]">
         <video
           ref={ref}
-          src={intro.url}
+          src={srcUrl}
+
           playsInline
           preload="auto"
           onClick={togglePlay}
