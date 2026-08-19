@@ -132,7 +132,7 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
       v.removeEventListener("pause", onPause);
       v.removeEventListener("play", onPlay);
     };
-  }, []);
+  }, [srcUrl]);
 
   const activeCue = useMemo(
     () => CAPTIONS.find((c) => time >= c.from && time < c.to),
