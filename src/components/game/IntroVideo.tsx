@@ -37,6 +37,10 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
   const [canPlay, setCanPlay] = useState(false);
   const [failed, setFailed] = useState(false);
   const [needsTap, setNeedsTap] = useState(false);
+  // Static file first (works on any host, e.g. Vercel/GitHub Pages);
+  // fall back to the managed asset URL if it's missing.
+  const [srcUrl, setSrcUrl] = useState("/intro.mp4");
+
 
   const startPlayback = () => {
     const v = ref.current;
@@ -106,7 +110,11 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
     };
     const onMeta = () => { setDuration(v.duration || 0); setCanPlay(true); };
     const onCanPlay = () => { setCanPlay(true); setFailed(false); };
-    const onError = () => setFailed(true);
+    const onError = () => {
+      if (srcUrl !== intro.url) { setSrcUrl(intro.url); setFailed(false); return; }
+      setFailed(true);
+    };
+
     const onPause = () => setPaused(true);
     const onPlay = () => setPaused(false);
     v.addEventListener("timeupdate", onTime);
@@ -124,7 +132,7 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
       v.removeEventListener("pause", onPause);
       v.removeEventListener("play", onPlay);
     };
-  }, []);
+  }, [srcUrl]);
 
   const activeCue = useMemo(
     () => CAPTIONS.find((c) => time >= c.from && time < c.to),
@@ -193,7 +201,8 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
       <div className="relative aspect-[16/10]">
         <video
           ref={ref}
-          src={intro.url}
+          src={srcUrl}
+
           playsInline
           preload="auto"
           onClick={togglePlay}
