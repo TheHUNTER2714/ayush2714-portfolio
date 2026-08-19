@@ -34,22 +34,24 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
   const [volume, setVolume] = useState(0.9);
   const [paused, setPaused] = useState(false);
   const [showCC, setShowCC] = useState(true);
+  const [canPlay, setCanPlay] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [needsTap, setNeedsTap] = useState(false);
 
-  // Cinematic auto-start: after the blast doors open, play ONCE from the top.
-  // Try with audio first; if the browser blocks unmuted autoplay, fall back
-  // to muted playback + the visible "TAP FOR AUDIO" nudge.
-  useEffect(() => {
+  const startPlayback = () => {
     const v = ref.current;
-    if (!v || !autoStart || played) return;
+    if (!v) return;
     v.currentTime = 0;
     v.volume = volume;
     v.muted = false;
     v.play()
-      .then(() => { setMuted(false); setPlayed(true); })
+      .then(() => { setMuted(false); setPlayed(true); setNeedsTap(false); })
       .catch(() => {
         v.muted = true;
         setMuted(true);
-        v.play().then(() => setPlayed(true)).catch(() => {});
+        v.play()
+          .then(() => { setPlayed(true); setNeedsTap(false); })
+          .catch(() => setNeedsTap(true));
         // On the FIRST user gesture anywhere on the page, unmute smoothly.
         const unmute = () => {
           const vid = ref.current;
@@ -67,7 +69,16 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
         window.addEventListener("touchstart", unmute, { once: true, passive: true });
         window.addEventListener("scroll", unmute, { once: true, passive: true });
       });
-  }, [autoStart, played, volume]);
+  };
+
+  // Cinematic auto-start: after the blast doors open, play ONCE from the top.
+  // Waits for the media to be ready so the frame is never left blank.
+  useEffect(() => {
+    if (!autoStart || played || !canPlay) return;
+    startPlayback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, played, canPlay]);
+
 
   useEffect(() => {
     const el = wrapRef.current;
