@@ -104,16 +104,23 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
       setTime(v.currentTime);
       setProgress(v.currentTime / v.duration);
     };
-    const onMeta = () => setDuration(v.duration || 0);
+    const onMeta = () => { setDuration(v.duration || 0); setCanPlay(true); };
+    const onCanPlay = () => { setCanPlay(true); setFailed(false); };
+    const onError = () => setFailed(true);
     const onPause = () => setPaused(true);
     const onPlay = () => setPaused(false);
     v.addEventListener("timeupdate", onTime);
     v.addEventListener("loadedmetadata", onMeta);
+    v.addEventListener("canplay", onCanPlay);
+    v.addEventListener("error", onError);
+    if (v.readyState >= 2) setCanPlay(true);
     v.addEventListener("pause", onPause);
     v.addEventListener("play", onPlay);
     return () => {
       v.removeEventListener("timeupdate", onTime);
       v.removeEventListener("loadedmetadata", onMeta);
+    v.removeEventListener("canplay", onCanPlay);
+    v.removeEventListener("error", onError);
       v.removeEventListener("pause", onPause);
       v.removeEventListener("play", onPlay);
     };
@@ -266,6 +273,43 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* LOADING / TAP-TO-PLAY / ERROR overlays — never leave a blank frame */}
+        {!canPlay && !failed && (
+          <div className="absolute inset-0 grid place-items-center pointer-events-none">
+            <motion.div
+              animate={{ opacity: [0.4, 1, 0.4] }}
+              transition={{ duration: 1.2, repeat: Infinity }}
+              className="font-mono text-[11px] tracking-[0.3em] text-primary"
+            >
+              ▸ BUFFERING INTRO FEED…
+            </motion.div>
+          </div>
+        )}
+
+        {(needsTap || (canPlay && !played)) && !ended && !failed && (
+          <button
+            onClick={startPlayback}
+            className="absolute inset-0 grid place-items-center bg-background/40 backdrop-blur-[2px]"
+          >
+            <span className="corner-frame bg-card px-6 py-3 font-display text-sm tracking-[0.3em] text-primary">
+              <span className="c-bl" /><span className="c-br" />
+              ▶ PLAY INTRO
+            </span>
+          </button>
+        )}
+
+        {failed && (
+          <div className="absolute inset-0 grid place-items-center text-center">
+            <button
+              onClick={() => { const v = ref.current; if (!v) return; setFailed(false); v.load(); }}
+              className="corner-frame bg-card px-5 py-2.5 font-display text-xs tracking-widest text-accent"
+            >
+              <span className="c-bl" /><span className="c-br" />
+              ↻ RELOAD FEED
+            </button>
+          </div>
+        )}
 
         {/* MUTED nudge — encourages unmute */}
         <AnimatePresence>
