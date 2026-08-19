@@ -110,7 +110,11 @@ export function IntroVideo({ autoStart = false }: { autoStart?: boolean } = {}) 
     };
     const onMeta = () => { setDuration(v.duration || 0); setCanPlay(true); };
     const onCanPlay = () => { setCanPlay(true); setFailed(false); };
-    const onError = () => setFailed(true);
+    const onError = () => {
+      if (srcUrl !== intro.url) { setSrcUrl(intro.url); setFailed(false); return; }
+      setFailed(true);
+    };
+
     const onPause = () => setPaused(true);
     const onPlay = () => setPaused(false);
     v.addEventListener("timeupdate", onTime);
